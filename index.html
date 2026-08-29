@@ -14,7 +14,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -24,14 +24,9 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        brand: {
-                            dark: '#030712',
-                            navy: '#0b132b',
-                            emerald: '#064e3b',
-                            accent: '#10b981',
-                            teal: '#14b8a6',
-                            cyan: '#06b6d4',
-                        }
+                        customGreen: '#00a950',
+                        customBlue: '#007bff',
+                        panelDark: '#08172c',
                     }
                 }
             }
@@ -39,49 +34,48 @@
     </script>
 
     <style>
-        /* Dark Navy and Emerald Deep Gradient Background */
+        /* Fondo en degradé continuo con los colores corporativos #007bff y #00a950 */
         body {
-            background: linear-gradient(135deg, #030712 0%, #06281e 35%, #0b172a 70%, #02120e 100%);
+            background: linear-gradient(135deg, #021226 0%, #0056b3 25%, #007bff 48%, #00a950 80%, #01381b 100%);
             background-attachment: fixed;
-            color: #f3f4f6;
+            color: #ffffff;
             min-height: 100vh;
         }
 
-        /* Glassmorphism containers */
+        /* Tarjetas Glassmorphism con fondo oscuro de alto contraste */
         .glass-card {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(16, 185, 129, 0.18);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            background: rgba(8, 23, 44, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 14px 35px -5px rgba(0, 0, 0, 0.55), 0 6px 14px -3px rgba(0, 0, 0, 0.35);
         }
 
         .glass-card:hover {
-            border-color: rgba(16, 185, 129, 0.35);
+            border-color: rgba(0, 169, 80, 0.5);
         }
 
-        /* Custom scrollbars */
+        /* Scrollbars personalizados */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(6, 17, 34, 0.9);
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(16, 185, 129, 0.3);
+            background: #00a950;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(16, 185, 129, 0.6);
+            background: #007bff;
         }
 
-        /* Custom Glowing Elements */
-        .glow-emerald {
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+        .glow-accent {
+            box-shadow: 0 0 22px rgba(0, 169, 80, 0.35);
         }
-        .glow-cyan {
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+        .glow-blue {
+            box-shadow: 0 0 22px rgba(0, 123, 255, 0.45);
         }
     </style>
 </head>
@@ -91,82 +85,74 @@
         
         <!-- Header & Control Bar -->
         <header class="glass-card rounded-2xl p-5 md:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-emerald-400 glow-emerald">
-                    <i class="fa-solid fa-chart-line text-2xl md:text-3xl"></i>
+            <!-- Título e Información del Dashboard -->
+            <div class="flex items-center gap-3.5">
+                <div class="p-3 bg-gradient-to-br from-[#007bff]/30 to-[#00a950]/30 border border-white/20 rounded-2xl text-emerald-300 glow-accent shadow-inner">
+                    <i class="fa-solid fa-chart-line text-2xl md:text-3xl text-white"></i>
                 </div>
                 <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+                    <div class="flex items-center gap-2.5">
+                        <h1 class="text-xl md:text-2xl font-black text-white tracking-tight drop-shadow-sm">
                             Dashboard de Evolución Mensual por Canales
                         </h1>
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase">
-                            <i class="fa-solid fa-bolt text-amber-400"></i> En Vivo
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#00a950]/30 text-emerald-200 border border-[#00a950] uppercase tracking-wide">
+                            <i class="fa-solid fa-bolt text-amber-300"></i> En Vivo
                         </span>
                     </div>
-                    <p class="text-xs md:text-sm text-slate-400">
+                    <p class="text-xs md:text-sm text-slate-300 mt-0.5">
                         Sincronización en tiempo real desde Google Sheets con agrupación mensual estricta
                     </p>
                 </div>
             </div>
 
-            <!-- Actions & File Controls -->
+            <!-- Header Controls: Status Badge & Botón Actualizar -->
             <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-                <!-- Status Badge -->
-                <div id="dataStatusBadge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-900/90 text-emerald-300 border border-emerald-700/50">
+                <div id="dataStatusBadge" class="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-950/90 text-emerald-300 border border-emerald-500/40 shadow-md">
                     <span id="statusPulse" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
                     <div>
-                        <span id="dataStatusText" class="font-semibold">Conectando a Google Sheets...</span>
+                        <span id="dataStatusText" class="font-bold text-white">Conectando...</span>
                         <span id="lastUpdatedText" class="text-[10px] text-slate-400 block sm:inline sm:ml-1"></span>
                     </div>
                 </div>
 
-                <!-- Sync Button -->
-                <button onclick="fetchGoogleSheetsData(true)" id="btnSyncNow" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5" title="Sincronizar datos ahora">
-                    <i id="syncIcon" class="fa-solid fa-rotate text-emerald-400"></i>
+                <button onclick="fetchGoogleSheetsData(true)" id="btnSyncNow" class="px-4 py-2 bg-gradient-to-r from-[#007bff] to-[#0056b3] hover:from-[#0069d9] hover:to-[#004085] text-white border border-blue-400/40 rounded-xl text-xs font-bold transition-all shadow-lg glow-blue flex items-center gap-2" title="Sincronizar datos ahora">
+                    <i id="syncIcon" class="fa-solid fa-rotate text-white text-xs"></i>
                     <span>Actualizar Datos</span>
                 </button>
-
-                <!-- File Upload Button Fallback -->
-                <label class="cursor-pointer px-3.5 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/70 rounded-xl text-xs font-medium transition-all flex items-center gap-2" title="Cargar archivo CSV local opcional">
-                    <i class="fa-solid fa-upload text-slate-400"></i>
-                    <span>Cargar CSV local</span>
-                    <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
-                </label>
             </div>
         </header>
 
-        <!-- Metric Switcher Bar & Botón para Procesar Cantidad de Operaciones -->
+        <!-- Metric Switcher Bar -->
         <div class="glass-card rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <i class="fa-solid fa-sliders text-emerald-400"></i> Variable de Análisis Principal:
+            <div class="flex items-center gap-2.5">
+                <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-sliders text-[#00a950] text-sm"></i> Variable de Análisis:
                 </span>
-                <span id="currentMetricLabel" class="text-xs font-bold text-cyan-300 px-2.5 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-700/40">
+                <span id="currentMetricLabel" class="text-xs font-extrabold text-white px-3 py-1 rounded-lg bg-gradient-to-r from-[#007bff] to-[#00a950] shadow-md border border-white/20">
                     Cantidad de Operaciones
                 </span>
             </div>
 
-            <!-- Botones de Acción para Procesar Métricas -->
-            <div class="flex flex-wrap items-center gap-2">
+            <!-- Botones de Procesamiento con Alto Contraste -->
+            <div class="flex flex-wrap items-center gap-2.5">
                 <!-- BOTÓN PRINCIPAL: Procesar Cantidad de Operaciones -->
                 <button id="btnMetricOPS" onclick="setPrimaryMetric('OPS')" 
-                    class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-cyan-600 text-white shadow-lg shadow-cyan-950/50 glow-cyan border border-cyan-400/50">
+                    class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 flex items-center justify-center gap-2 bg-[#007bff] hover:bg-[#0069d9] text-white shadow-lg glow-blue border-2 border-white/40">
                     <i class="fa-solid fa-calculator text-sm"></i>
                     <span>Procesar Cantidad de Operaciones</span>
                 </button>
 
                 <!-- Botón Procesar Monto BS -->
                 <button id="btnMetricBS" onclick="setPrimaryMetric('BS')" 
-                    class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-coins text-emerald-400"></i>
+                    class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-200 hover:text-white bg-slate-900/90 hover:bg-[#00a950] border border-slate-700 hover:border-[#00a950] transition-all flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-coins text-amber-400"></i>
                     <span>Monto BS</span>
                 </button>
 
                 <!-- Botón Procesar Monto USD -->
                 <button id="btnMetricUSD" onclick="setPrimaryMetric('USD')" 
-                    class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-dollar-sign text-teal-400"></i>
+                    class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-200 hover:text-white bg-slate-900/90 hover:bg-[#007bff] border border-slate-700 hover:border-[#007bff] transition-all flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-dollar-sign text-emerald-400"></i>
                     <span>Monto USD</span>
                 </button>
             </div>
@@ -178,33 +164,33 @@
                 <!-- Channel Filter -->
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-filter text-emerald-400 text-xs"></i>
-                    <label for="channelSelect" class="text-xs font-medium text-slate-300">Canal:</label>
-                    <select id="channelSelect" onchange="applyFilters()" class="bg-slate-900/90 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                    <label for="channelSelect" class="text-xs font-bold text-slate-200">Canal:</label>
+                    <select id="channelSelect" onchange="applyFilters()" class="bg-slate-950 text-white font-medium text-xs rounded-lg px-3 py-1.5 border border-slate-600 focus:border-[#00a950] focus:ring-1 focus:ring-[#00a950] focus:outline-none">
                         <option value="ALL">Todos los canales</option>
                     </select>
                 </div>
 
                 <!-- Start Month Filter -->
                 <div class="flex items-center gap-2">
-                    <label for="startMonthSelect" class="text-xs font-medium text-slate-300">Desde:</label>
-                    <select id="startMonthSelect" onchange="applyFilters()" class="bg-slate-900/90 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                    <label for="startMonthSelect" class="text-xs font-bold text-slate-200">Desde:</label>
+                    <select id="startMonthSelect" onchange="applyFilters()" class="bg-slate-950 text-white font-medium text-xs rounded-lg px-3 py-1.5 border border-slate-600 focus:border-[#00a950] focus:ring-1 focus:ring-[#00a950] focus:outline-none">
                     </select>
                 </div>
 
                 <!-- End Month Filter -->
                 <div class="flex items-center gap-2">
-                    <label for="endMonthSelect" class="text-xs font-medium text-slate-300">Hasta:</label>
-                    <select id="endMonthSelect" onchange="applyFilters()" class="bg-slate-900/90 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                    <label for="endMonthSelect" class="text-xs font-bold text-slate-200">Hasta:</label>
+                    <select id="endMonthSelect" onchange="applyFilters()" class="bg-slate-950 text-white font-medium text-xs rounded-lg px-3 py-1.5 border border-slate-600 focus:border-[#00a950] focus:ring-1 focus:ring-[#00a950] focus:outline-none">
                     </select>
                 </div>
             </div>
 
             <!-- Auto-refresh interval and Reset Filters -->
             <div class="flex items-center gap-4">
-                <div class="flex items-center gap-1.5 text-xs text-slate-400">
-                    <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i>
+                <div class="flex items-center gap-2 text-xs font-medium text-slate-300">
+                    <i class="fa-solid fa-clock-rotate-left text-cyan-400"></i>
                     <span>Auto:</span>
-                    <select id="autoRefreshInterval" onchange="setupAutoRefresh()" class="bg-slate-900 border border-slate-700 text-slate-200 text-[11px] rounded px-2 py-1">
+                    <select id="autoRefreshInterval" onchange="setupAutoRefresh()" class="bg-slate-950 border border-slate-600 text-white text-[11px] font-semibold rounded px-2.5 py-1 focus:outline-none focus:border-cyan-400">
                         <option value="0">Manual</option>
                         <option value="30000">Cada 30s</option>
                         <option value="60000" selected>Cada 1m</option>
@@ -212,8 +198,8 @@
                     </select>
                 </div>
 
-                <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-emerald-400 transition-colors flex items-center gap-1">
-                    <i class="fa-solid fa-xmark"></i> Limpiar Filtros
+                <button onclick="resetFilters()" class="text-xs font-bold text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600 transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-xmark text-rose-400"></i> Limpiar Filtros
                 </button>
             </div>
         </div>
@@ -222,87 +208,87 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             <!-- Card 1: Total Operaciones -->
-            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01]">
+            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-l-4 border-l-[#007bff]">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Operaciones</p>
-                        <h3 id="kpiOperaciones" class="text-2xl md:text-3xl font-extrabold text-white mt-1">0</h3>
+                        <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">Total Operaciones</p>
+                        <h3 id="kpiOperaciones" class="text-2xl md:text-3xl font-black text-white mt-1">0</h3>
                     </div>
-                    <div class="p-2.5 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 rounded-xl">
+                    <div class="p-2.5 bg-[#007bff]/20 border border-[#007bff]/40 text-blue-300 rounded-xl shadow">
                         <i class="fa-solid fa-arrow-up-1-9 text-lg"></i>
                     </div>
                 </div>
                 <div class="mt-3 flex items-center gap-2 text-xs">
-                    <span id="kpiOperacionesMoM" class="font-semibold text-emerald-400 flex items-center gap-1">
+                    <span id="kpiOperacionesMoM" class="font-bold text-emerald-300 flex items-center gap-1">
                         <i class="fa-solid fa-arrow-trend-up"></i> 0%
                     </span>
-                    <span class="text-slate-400">vs mes previo</span>
+                    <span class="text-slate-300">vs mes previo</span>
                 </div>
             </div>
 
             <!-- Card 2: Monto Total -->
-            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01]">
+            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-l-4 border-l-[#00a950]">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p id="kpiMontoTitle" class="text-xs font-medium text-slate-400 uppercase tracking-wider">Monto Total (BS)</p>
-                        <h3 id="kpiMontoTotal" class="text-2xl md:text-3xl font-extrabold text-white mt-1">0</h3>
+                        <p id="kpiMontoTitle" class="text-xs font-bold text-slate-300 uppercase tracking-wider">Monto Total (BS)</p>
+                        <h3 id="kpiMontoTotal" class="text-2xl md:text-3xl font-black text-white mt-1">0</h3>
                     </div>
-                    <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
+                    <div class="p-2.5 bg-[#00a950]/20 border border-[#00a950]/40 text-emerald-300 rounded-xl shadow">
                         <i class="fa-solid fa-sack-dollar text-lg"></i>
                     </div>
                 </div>
                 <div class="mt-3 flex items-center gap-2 text-xs">
-                    <span id="kpiMontoMoM" class="font-semibold text-emerald-400 flex items-center gap-1">
+                    <span id="kpiMontoMoM" class="font-bold text-emerald-300 flex items-center gap-1">
                         <i class="fa-solid fa-arrow-trend-up"></i> 0%
                     </span>
-                    <span class="text-slate-400">vs mes previo</span>
+                    <span class="text-slate-300">vs mes previo</span>
                 </div>
             </div>
 
             <!-- Card 3: Ticket Promedio -->
-            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01]">
+            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-l-4 border-l-cyan-400">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Ticket Promedio</p>
-                        <h3 id="kpiTicketPromedio" class="text-2xl md:text-3xl font-extrabold text-white mt-1">0</h3>
+                        <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">Ticket Promedio</p>
+                        <h3 id="kpiTicketPromedio" class="text-2xl md:text-3xl font-black text-white mt-1">0</h3>
                     </div>
-                    <div class="p-2.5 bg-teal-500/10 border border-teal-500/20 text-teal-400 rounded-xl">
+                    <div class="p-2.5 bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 rounded-xl shadow">
                         <i class="fa-solid fa-receipt text-lg"></i>
                     </div>
                 </div>
                 <div class="mt-3 flex items-center gap-2 text-xs">
-                    <span class="text-slate-400">Monto medio por operación</span>
+                    <span class="text-slate-300 font-medium">Monto medio por operación</span>
                 </div>
             </div>
 
             <!-- Card 4: Top Canal Dominante -->
-            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01]">
+            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-l-4 border-l-amber-400">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p id="kpiTopCanalTitle" class="text-xs font-medium text-slate-400 uppercase tracking-wider">Canal Dominante (Ops)</p>
-                        <h3 id="kpiTopCanal" class="text-xl md:text-2xl font-extrabold text-emerald-300 mt-1 truncate max-w-[170px]">-</h3>
+                        <p id="kpiTopCanalTitle" class="text-xs font-bold text-slate-300 uppercase tracking-wider">Canal Dominante (Ops)</p>
+                        <h3 id="kpiTopCanal" class="text-xl md:text-2xl font-black text-amber-300 mt-1 truncate max-w-[170px]">-</h3>
                     </div>
-                    <div class="p-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl">
+                    <div class="p-2.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-xl shadow">
                         <i class="fa-solid fa-trophy text-lg"></i>
                     </div>
                 </div>
-                <div class="mt-3 flex items-center gap-2 text-xs text-slate-400">
-                    <span id="kpiTopCanalShare" class="font-semibold text-amber-300">0%</span>
-                    <span id="kpiTopCanalShareText">del total de operaciones</span>
+                <div class="mt-3 flex items-center gap-2 text-xs text-slate-300">
+                    <span id="kpiTopCanalShare" class="font-extrabold text-white bg-amber-500/30 px-1.5 py-0.5 rounded border border-amber-400/40">0%</span>
+                    <span id="kpiTopCanalShareText" class="font-medium">del total de operaciones</span>
                 </div>
             </div>
 
         </div>
 
-        <!-- Charts Grid Section 1: Evolución Temporal -->
-        <div class="glass-card rounded-2xl p-5">
+        <!-- Charts Grid Section 1: Evolución Temporal (Ancho Completo) -->
+        <div class="glass-card rounded-2xl p-5 md:p-6">
             <div class="flex justify-between items-center mb-4">
                 <div>
-                    <h2 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                    <h2 class="text-base md:text-lg font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-[#00a950]"></i>
                         <span id="lineChartTitle">Evolución Temporal de Cantidad de Operaciones</span>
                     </h2>
-                    <p class="text-xs text-slate-400">Tendencia mensual de crecimiento o decrecimiento por cada canal</p>
+                    <p class="text-xs text-slate-300">Tendencia mensual de crecimiento o decrecimiento por cada canal a lo largo del tiempo</p>
                 </div>
             </div>
             <div class="relative h-80 w-full">
@@ -314,14 +300,14 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             <!-- Chart 2: Grouped Bar Chart -->
-            <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+            <div class="glass-card rounded-2xl p-5 md:p-6 flex flex-col justify-between">
                 <div class="flex justify-between items-center mb-4">
                     <div>
-                        <h2 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-chart-column text-cyan-400"></i>
+                        <h2 class="text-base font-black text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-[#007bff]"></i>
                             Comparación Multi-Métrica por Canal
                         </h2>
-                        <p class="text-xs text-slate-400">Cantidad de operaciones (en miles) vs Monto total por cada canal</p>
+                        <p class="text-xs text-slate-300">Cantidad de operaciones (en miles) vs Monto total por cada canal</p>
                     </div>
                 </div>
                 <div class="relative h-80 w-full">
@@ -330,14 +316,14 @@
             </div>
 
             <!-- Chart 3: Donut Chart - Participación Relativa (% Total) -->
-            <div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+            <div class="glass-card rounded-2xl p-5 md:p-6 flex flex-col justify-between">
                 <div class="flex justify-between items-center mb-4">
                     <div>
-                        <h2 class="text-base font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-chart-pie text-purple-400"></i>
+                        <h2 class="text-base font-black text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-emerald-400"></i>
                             <span id="donutChartTitle">Participación por Cantidad de Operaciones (% Total)</span>
                         </h2>
-                        <p id="donutChartSubtitle" class="text-xs text-slate-400">Porcentaje relativo de volumen según variable activa</p>
+                        <p id="donutChartSubtitle" class="text-xs text-slate-300">Porcentaje relativo de volumen según variable activa</p>
                     </div>
                 </div>
                 <div class="relative h-80 w-full flex items-center justify-center">
@@ -348,44 +334,44 @@
         </div>
 
         <!-- Detailed Data Table -->
-        <div class="glass-card rounded-2xl p-5">
+        <div class="glass-card rounded-2xl p-5 md:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div>
-                    <h2 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-table-list text-emerald-400"></i>
+                    <h2 class="text-base font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-table-list text-[#00a950]"></i>
                         Resumen Agregado Mes a Mes por Canal
                     </h2>
-                    <p class="text-xs text-slate-400">Consolidado mensual derivado estrictamente de las columnas Fecha, Canal, CantidadOperaciones, MontoBS y MontoUSD</p>
+                    <p class="text-xs text-slate-300">Consolidado mensual derivado estrictamente de las columnas Fecha, Canal, CantidadOperaciones, MontoBS y MontoUSD</p>
                 </div>
                 
                 <div class="flex items-center gap-2">
                     <div class="relative">
-                        <input type="text" id="tableSearch" onkeyup="renderTable()" placeholder="Buscar canal o mes..." class="bg-slate-900/90 border border-slate-700 text-xs rounded-xl pl-8 pr-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 w-48">
-                        <i class="fa-solid fa-search absolute left-2.5 top-2.5 text-slate-500 text-xs"></i>
+                        <input type="text" id="tableSearch" onkeyup="renderTable()" placeholder="Buscar canal o mes..." class="bg-slate-950 border border-slate-600 text-xs rounded-xl pl-8 pr-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-[#00a950] focus:ring-1 focus:ring-[#00a950] w-52">
+                        <i class="fa-solid fa-search absolute left-2.5 top-3 text-slate-400 text-xs"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="overflow-x-auto rounded-xl border border-slate-800">
-                <table class="w-full text-left text-xs text-slate-300">
-                    <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] tracking-wider font-semibold border-b border-slate-800">
+            <div class="overflow-x-auto rounded-xl border border-slate-700 shadow-inner">
+                <table class="w-full text-left text-xs text-slate-200">
+                    <thead class="bg-slate-950 text-slate-300 uppercase text-[11px] tracking-wider font-extrabold border-b border-slate-700">
                         <tr>
-                            <th class="p-3">Mes / Año</th>
-                            <th class="p-3">Canal</th>
-                            <th class="p-3 text-right">Cantidad de Operaciones</th>
-                            <th class="p-3 text-right">Monto BS</th>
-                            <th class="p-3 text-right">Monto USD</th>
-                            <th class="p-3 text-right">Ticket Promedio (BS)</th>
+                            <th class="p-3.5">Mes / Año</th>
+                            <th class="p-3.5">Canal</th>
+                            <th class="p-3.5 text-right text-cyan-300">Cantidad de Operaciones</th>
+                            <th class="p-3.5 text-right text-emerald-300">Monto BS</th>
+                            <th class="p-3.5 text-right text-blue-300">Monto USD</th>
+                            <th class="p-3.5 text-right text-amber-300">Ticket Promedio (BS)</th>
                         </tr>
                     </thead>
-                    <tbody id="dataTableBody" class="divide-y divide-slate-800/60 font-mono">
+                    <tbody id="dataTableBody" class="divide-y divide-slate-800/80 font-mono">
                         <!-- Dynamic rows inserted here -->
                     </tbody>
                 </table>
             </div>
             
             <!-- Table Footer Summary -->
-            <div id="tableSummaryText" class="mt-3 text-xs text-slate-400 text-right">
+            <div id="tableSummaryText" class="mt-3.5 text-xs text-slate-300 font-medium text-right">
                 Mostrando resumen de datos agregados
             </div>
         </div>
@@ -403,22 +389,22 @@
         let chartInstances = {};
         let autoRefreshTimer = null;
 
-        // Vibrant Color Palette for Dark Theme
+        // Contrasting Color Palette for Dark Glass Theme
         const palette = [
-            '#10b981', // Emerald
+            '#00a950', // Vibrant Green
+            '#007bff', // Electric Blue
+            '#f59e0b', // Amber / Gold
+            '#a855f7', // Vivid Purple
             '#06b6d4', // Cyan
-            '#f59e0b', // Amber
-            '#8b5cf6', // Violet
             '#ec4899', // Pink
-            '#3b82f6', // Blue
+            '#e11d48', // Crimson
             '#14b8a6', // Teal
-            '#f97316', // Orange
-            '#a855f7', // Purple
-            '#eab308'  // Yellow
+            '#f97316', // Bright Orange
+            '#84cc16'  // Lime
         ];
 
         window.onload = function() {
-            // Initiate live connection immediately
+            // Iniciar conexión en tiempo real automáticamente
             fetchGoogleSheetsData();
             setupAutoRefresh();
         };
@@ -440,7 +426,7 @@
             
             updateConnectionStatus('syncing', 'Descargando datos...');
 
-            // Append timestamp to bypass browser cache and ensure real-time fresh data
+            // Agregar timestamp para evitar caché del navegador y obtener datos actualizados
             const cacheBusterUrl = `${GOOGLE_SHEETS_CSV_URL}&_ts=${Date.now()}`;
 
             Papa.parse(cacheBusterUrl, {
@@ -477,37 +463,14 @@
             } else if (type === 'syncing') {
                 pulse.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping";
             } else {
-                pulse.className = "w-2.5 h-2.5 rounded-full bg-rose-400";
+                pulse.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
             }
         }
 
         function updateTimestamp() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('lastUpdatedText').innerText = `• Actualizado: ${timeStr}`;
-        }
-
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            Papa.parse(file, {
-                header: true,
-                dynamicTyping: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    if (results.data && results.data.length > 0) {
-                        processCSVData(results.data);
-                        updateConnectionStatus('online', `Archivo local: ${file.name}`);
-                        updateTimestamp();
-                    } else {
-                        alert("El archivo CSV ingresado está vacío o no contiene registros válidos.");
-                    }
-                },
-                error: function(err) {
-                    alert("Error al leer el archivo CSV: " + err.message);
-                }
-            });
+            document.getElementById('lastUpdatedText').innerText = `• Sincronizado: ${timeStr}`;
         }
 
         function cleanNumber(val) {
@@ -549,19 +512,16 @@
 
                 if (!rawDate) return;
 
-                // Robust date parsing -> Extracts YYYY-MM (supports DD/MM/YYYY, YYYY-MM-DD, etc.)
+                // Formatos de fecha DD/MM/YYYY o YYYY-MM-DD convertidos a YYYY-MM
                 let monthKey = "";
                 const strDate = String(rawDate).trim();
                 
-                // Formato DD/MM/YYYY o DD-MM-YYYY
                 if (strDate.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/)) {
                     const parts = strDate.split(/[\/-]/);
                     const month = parts[1].padStart(2, '0');
                     const year = parts[2];
                     monthKey = `${year}-${month}`;
-                } 
-                // Formato YYYY/MM/DD o YYYY-MM-DD
-                else if (strDate.match(/^(\d{4})[\/-](\d{1,2})/)) {
+                } else if (strDate.match(/^(\d{4})[\/-](\d{1,2})/)) {
                     const parts = strDate.split(/[\/-]/);
                     const year = parts[0];
                     const month = parts[1].padStart(2, '0');
@@ -591,10 +551,10 @@
 
             aggregatedMonthlyData = Object.values(monthlyAgg);
 
-            // Populate Filter Selectors
+            // Poblar Selectores de Filtro
             populateFilters();
 
-            // Refresh Dashboard
+            // Refrescar Dashboard
             applyFilters();
         }
 
@@ -653,38 +613,37 @@
         function setPrimaryMetric(metric) {
             primaryMetric = metric;
 
-            // Reset Button Styles
             const btnOPS = document.getElementById('btnMetricOPS');
             const btnBS = document.getElementById('btnMetricBS');
             const btnUSD = document.getElementById('btnMetricUSD');
             const labelMetric = document.getElementById('currentMetricLabel');
 
-            const inactiveClass = "px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 transition-all flex items-center justify-center gap-1.5";
+            const inactiveClass = "px-4 py-2.5 rounded-xl text-xs font-bold text-slate-200 hover:text-white bg-slate-900/90 border border-slate-700 transition-all flex items-center justify-center gap-2 shadow-sm";
             
             btnOPS.className = inactiveClass;
             btnBS.className = inactiveClass;
             btnUSD.className = inactiveClass;
 
             if (metric === 'OPS') {
-                btnOPS.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-cyan-600 text-white shadow-lg shadow-cyan-950/50 glow-cyan border border-cyan-400/50";
+                btnOPS.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 flex items-center justify-center gap-2 bg-[#007bff] hover:bg-[#0069d9] text-white shadow-lg glow-blue border-2 border-white/40";
                 labelMetric.innerText = "Cantidad de Operaciones";
-                labelMetric.className = "text-xs font-bold text-cyan-300 px-2.5 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-700/40";
+                labelMetric.className = "text-xs font-extrabold text-white px-3 py-1 rounded-lg bg-gradient-to-r from-[#007bff] to-[#0056b3] shadow-md border border-white/20";
                 
                 document.getElementById('lineChartTitle').innerText = "Evolución Temporal de Cantidad de Operaciones";
                 document.getElementById('donutChartTitle').innerText = "Participación por Cantidad de Operaciones (% Total)";
                 document.getElementById('donutChartSubtitle').innerText = "Porcentaje relativo de operaciones según variable activa";
             } else if (metric === 'BS') {
-                btnBS.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-emerald-600 text-white shadow-lg shadow-emerald-950/50 glow-emerald border border-emerald-400/50";
+                btnBS.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 flex items-center justify-center gap-2 bg-[#00a950] hover:bg-[#008f43] text-white shadow-lg glow-accent border-2 border-white/40";
                 labelMetric.innerText = "Monto en Bolivianos (BS)";
-                labelMetric.className = "text-xs font-bold text-emerald-300 px-2.5 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-700/40";
+                labelMetric.className = "text-xs font-extrabold text-white px-3 py-1 rounded-lg bg-gradient-to-r from-[#00a950] to-[#016833] shadow-md border border-white/20";
 
                 document.getElementById('lineChartTitle').innerText = "Evolución Temporal de Monto (BS)";
                 document.getElementById('donutChartTitle').innerText = "Participación por Monto BS (% Total)";
                 document.getElementById('donutChartSubtitle').innerText = "Porcentaje relativo de monto en Bolivianos según variable activa";
             } else if (metric === 'USD') {
-                btnUSD.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-teal-600 text-white shadow-lg shadow-teal-950/50 glow-emerald border border-teal-400/50";
+                btnUSD.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-[#007bff] to-[#00a950] text-white shadow-lg glow-blue border-2 border-white/40";
                 labelMetric.innerText = "Monto en Dólares (USD)";
-                labelMetric.className = "text-xs font-bold text-teal-300 px-2.5 py-0.5 rounded-md bg-teal-950/80 border border-teal-700/40";
+                labelMetric.className = "text-xs font-extrabold text-white px-3 py-1 rounded-lg bg-gradient-to-r from-[#007bff] to-[#00a950] shadow-md border border-white/20";
 
                 document.getElementById('lineChartTitle').innerText = "Evolución Temporal de Monto (USD)";
                 document.getElementById('donutChartTitle').innerText = "Participación por Monto USD (% Total)";
@@ -776,7 +735,7 @@
             document.getElementById('kpiTopCanalShare').innerText = `${topShare}%`;
             document.getElementById('kpiTopCanalShareText').innerText = primaryMetric === 'OPS' ? 'del total de operaciones' : 'del monto acumulado';
 
-            // Calculate MoM Growth for latest month vs previous month
+            // Crecimiento MoM último mes vs mes previo
             const months = [...new Set(data.map(d => d.month))].sort();
             if (months.length >= 2) {
                 const currM = months[months.length - 1];
@@ -792,15 +751,15 @@
                 const montoMoM = prevBS > 0 ? (((currBS - prevBS) / prevBS) * 100).toFixed(1) : 0;
 
                 document.getElementById('kpiOperacionesMoM').innerHTML = opsMoM >= 0 
-                    ? `<i class="fa-solid fa-arrow-trend-up text-emerald-400"></i> +${opsMoM}%`
+                    ? `<i class="fa-solid fa-arrow-trend-up text-emerald-300"></i> +${opsMoM}%`
                     : `<i class="fa-solid fa-arrow-trend-down text-rose-400"></i> ${opsMoM}%`;
 
                 document.getElementById('kpiMontoMoM').innerHTML = montoMoM >= 0 
-                    ? `<i class="fa-solid fa-arrow-trend-up text-emerald-400"></i> +${montoMoM}%`
+                    ? `<i class="fa-solid fa-arrow-trend-up text-emerald-300"></i> +${montoMoM}%`
                     : `<i class="fa-solid fa-arrow-trend-down text-rose-400"></i> ${montoMoM}%`;
             } else {
-                document.getElementById('kpiOperacionesMoM').innerHTML = `<i class="fa-solid fa-minus text-slate-400"></i> N/A`;
-                document.getElementById('kpiMontoMoM').innerHTML = `<i class="fa-solid fa-minus text-slate-400"></i> N/A`;
+                document.getElementById('kpiOperacionesMoM').innerHTML = `<i class="fa-solid fa-minus text-slate-300"></i> N/A`;
+                document.getElementById('kpiMontoMoM').innerHTML = `<i class="fa-solid fa-minus text-slate-300"></i> N/A`;
             }
         }
 
@@ -810,26 +769,31 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+                        labels: { 
+                            color: '#e2e8f0', 
+                            font: { family: 'Inter', size: 12, weight: 'bold' },
+                            padding: 14,
+                            usePointStyle: true
+                        }
                     },
                     tooltip: {
-                        backgroundColor: '#0f172a',
-                        titleColor: '#f8fafc',
-                        bodyColor: '#cbd5e1',
-                        borderColor: '#10b981',
-                        borderWidth: 1,
-                        padding: 10,
+                        backgroundColor: '#030d1a',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e2e8f0',
+                        borderColor: '#00a950',
+                        borderWidth: 1.5,
+                        padding: 12,
                         cornerRadius: 8
                     }
                 },
                 scales: {
                     x: {
-                        ticks: { color: '#64748b', font: { size: 10 } },
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        ticks: { color: '#cbd5e1', font: { size: 11, weight: '500' } },
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' }
                     },
                     y: {
-                        ticks: { color: '#64748b', font: { size: 10 } },
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        ticks: { color: '#cbd5e1', font: { size: 11, weight: '500' } },
+                        grid: { color: 'rgba(255, 255, 255, 0.08)' }
                     }
                 }
             };
@@ -837,7 +801,6 @@
             const months = [...new Set(data.map(d => d.month))].sort();
             const channels = [...new Set(data.map(d => d.canal))].sort();
 
-            // Destroy existing charts to prevent memory leaks and ghost canvas
             Object.keys(chartInstances).forEach(key => {
                 if (chartInstances[key]) chartInstances[key].destroy();
             });
@@ -853,10 +816,10 @@
                     data: chData,
                     borderColor: palette[idx % palette.length],
                     backgroundColor: palette[idx % palette.length],
-                    tension: 0.3,
-                    borderWidth: 2.5,
-                    pointRadius: 3.5,
-                    pointHoverRadius: 6
+                    tension: 0.35,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 7
                 };
             });
 
@@ -901,13 +864,17 @@
                         {
                             label: 'Cantidad Operaciones (en miles)',
                             data: channelAgg.map(c => (c.ops / 1000).toFixed(1)),
-                            backgroundColor: '#06b6d4',
+                            backgroundColor: '#007bff',
+                            borderColor: '#ffffff',
+                            borderWidth: 1,
                             borderRadius: 6
                         },
                         {
                             label: montoLabel,
                             data: montoData,
-                            backgroundColor: '#10b981',
+                            backgroundColor: '#00a950',
+                            borderColor: '#ffffff',
+                            borderWidth: 1,
                             borderRadius: 6
                         }
                     ]
@@ -944,9 +911,9 @@
                     datasets: [{
                         data: channelAgg.map(c => c.activeMetricVal),
                         backgroundColor: channelAgg.map((_, i) => palette[i % palette.length]),
-                        borderColor: '#0f172a',
-                        borderWidth: 2,
-                        hoverOffset: 6
+                        borderColor: '#020b18',
+                        borderWidth: 2.5,
+                        hoverOffset: 8
                     }]
                 },
                 options: {
@@ -956,8 +923,8 @@
                         legend: {
                             position: 'bottom',
                             labels: { 
-                                color: '#94a3b8', 
-                                font: { family: 'Inter', size: 11 },
+                                color: '#f1f5f9', 
+                                font: { family: 'Inter', size: 11, weight: 'bold' },
                                 padding: 12,
                                 usePointStyle: true
                             }
@@ -973,7 +940,7 @@
                             }
                         }
                     },
-                    cutout: '62%'
+                    cutout: '60%'
                 }
             });
         }
@@ -994,7 +961,7 @@
                 data = data.filter(d => d.canal.toLowerCase().includes(searchTerm) || d.month.toLowerCase().includes(searchTerm));
             }
 
-            // Sort by month desc, then canal asc
+            // Ordenar por mes descendente y luego canal ascendente
             data.sort((a, b) => b.month.localeCompare(a.month) || a.canal.localeCompare(b.canal));
 
             const tbody = document.getElementById('dataTableBody');
@@ -1003,7 +970,7 @@
             if (data.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="text-center py-6 text-slate-500 font-sans">
+                        <td colspan="6" class="text-center py-6 text-slate-300 font-sans font-medium">
                             No se encontraron registros que coincidan con los filtros seleccionados.
                         </td>
                     </tr>
@@ -1014,17 +981,17 @@
 
             data.forEach(row => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition-colors";
+                tr.className = "hover:bg-blue-950/40 transition-colors";
 
                 const avgTicket = row.cantidadOperaciones > 0 ? (row.montoBS / row.cantidadOperaciones) : 0;
 
                 tr.innerHTML = `
-                    <td class="p-3 font-semibold text-emerald-400">${row.month}</td>
-                    <td class="p-3 font-sans text-slate-200">${row.canal}</td>
-                    <td class="p-3 text-right font-semibold text-cyan-300">${row.cantidadOperaciones.toLocaleString('es-BO')}</td>
-                    <td class="p-3 text-right text-slate-300">Bs ${row.montoBS.toLocaleString('es-BO', { maximumFractionDigits: 2 })}</td>
-                    <td class="p-3 text-right text-slate-300">$ ${row.montoUSD.toLocaleString('es-BO', { maximumFractionDigits: 2 })}</td>
-                    <td class="p-3 text-right text-teal-300">Bs ${avgTicket.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="p-3.5 font-bold text-[#00a950]">${row.month}</td>
+                    <td class="p-3.5 font-sans font-semibold text-white">${row.canal}</td>
+                    <td class="p-3.5 text-right font-bold text-cyan-300">${row.cantidadOperaciones.toLocaleString('es-BO')}</td>
+                    <td class="p-3.5 text-right text-emerald-200">Bs ${row.montoBS.toLocaleString('es-BO', { maximumFractionDigits: 2 })}</td>
+                    <td class="p-3.5 text-right text-blue-200">$ ${row.montoUSD.toLocaleString('es-BO', { maximumFractionDigits: 2 })}</td>
+                    <td class="p-3.5 text-right font-medium text-amber-300">Bs ${avgTicket.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 `;
                 tbody.appendChild(tr);
             });
