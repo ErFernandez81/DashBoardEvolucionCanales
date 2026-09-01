@@ -3,1000 +3,601 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Evolución de Canales - Tiempo Real</title>
-    
+    <title>Dashboard Financiero y Operativo por Canales</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for interactive visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- PapaParse for high-performance CSV and Remote Stream processing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        customGreen: '#00a950',
-                        customBlue: '#007bff',
-                        panelDark: '#08172c',
-                    }
-                }
-            }
-        }
-    </script>
-
+    <!-- Chart.js para los gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- PapaParse para procesar el CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
-        /* Fondo en degradé continuo con los colores corporativos #007bff y #00a950 */
         body {
-            background: linear-gradient(135deg, #021226 0%, #0056b3 25%, #007bff 48%, #00a950 80%, #01381b 100%);
-            background-attachment: fixed;
-            color: #ffffff;
+            background: linear-gradient(135deg, #00a950 0%, #007bff 100%);
             min-height: 100vh;
         }
-
-        /* Tarjetas Glassmorphism con fondo oscuro de alto contraste */
-        .glass-card {
-            background: rgba(8, 23, 44, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            box-shadow: 0 14px 35px -5px rgba(0, 0, 0, 0.55), 0 6px 14px -3px rgba(0, 0, 0, 0.35);
-        }
-
-        .glass-card:hover {
-            border-color: rgba(0, 169, 80, 0.5);
-        }
-
-        /* Scrollbars personalizados */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(6, 17, 34, 0.9);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #00a950;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #007bff;
-        }
-
-        .glow-accent {
-            box-shadow: 0 0 22px rgba(0, 169, 80, 0.35);
-        }
-        .glow-blue {
-            box-shadow: 0 0 22px rgba(0, 123, 255, 0.45);
+        .card-bg {
+            background-color: #0b192c;
+            border: 1px solid #1e3e62;
         }
     </style>
 </head>
-<body class="font-sans antialiased p-3 sm:p-6 text-slate-100">
+<body class="text-white font-sans antialiased p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto space-y-6">
         
-        <!-- Header & Control Bar -->
-        <header class="glass-card rounded-2xl p-5 md:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <!-- Título e Información del Dashboard -->
-            <div class="flex items-center gap-3.5">
-                <div class="p-3 bg-gradient-to-br from-[#007bff]/30 to-[#00a950]/30 border border-white/20 rounded-2xl text-emerald-300 glow-accent shadow-inner">
-                    <i class="fa-solid fa-chart-line text-2xl md:text-3xl text-white"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2.5">
-                        <h1 class="text-xl md:text-2xl font-black text-white tracking-tight drop-shadow-sm">
-                            Dashboard de Evolución Mensual por Canales
-                        </h1>
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#00a950]/30 text-emerald-200 border border-[#00a950] uppercase tracking-wide">
-                            <i class="fa-solid fa-bolt text-amber-300"></i> En Vivo
-                        </span>
-                    </div>
-                    <p class="text-xs md:text-sm text-slate-300 mt-0.5">
-                        Sincronización en tiempo real desde Google Sheets con agrupación mensual estricta
-                    </p>
-                </div>
+        <!-- ENCABEZADO Y CONTROLES DE ACTUALIZACIÓN -->
+        <header class="card-bg rounded-2xl p-6 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold flex items-center gap-3">
+                    <i class="fa-solid fa-chart-line text-green-400"></i> Dashboard de Canales y Operaciones
+                </h1>
+                <p class="text-gray-400 text-sm mt-1">Monitoreo en tiempo real de operaciones, Monto BS y Monto USD.</p>
             </div>
-
-            <!-- Header Controls: Status Badge & Botón Actualizar -->
-            <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-                <div id="dataStatusBadge" class="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-950/90 text-emerald-300 border border-emerald-500/40 shadow-md">
-                    <span id="statusPulse" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    <div>
-                        <span id="dataStatusText" class="font-bold text-white">Conectando...</span>
-                        <span id="lastUpdatedText" class="text-[10px] text-slate-400 block sm:inline sm:ml-1"></span>
-                    </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-2 bg-[#1e3e62] px-3 py-2 rounded-xl">
+                    <label for="refreshInterval" class="text-xs text-gray-300">Auto-refresco:</label>
+                    <select id="refreshInterval" class="bg-transparent text-white text-sm focus:outline-none">
+                        <option value="0" class="bg-[#0b192c]">Desactivado</option>
+                        <option value="30" class="bg-[#0b192c]">Cada 30s</option>
+                        <option value="60" class="bg-[#0b192c]" selected>Cada 1 min</option>
+                        <option value="300" class="bg-[#0b192c]">Cada 5 min</option>
+                    </select>
                 </div>
-
-                <button onclick="fetchGoogleSheetsData(true)" id="btnSyncNow" class="px-4 py-2 bg-gradient-to-r from-[#007bff] to-[#0056b3] hover:from-[#0069d9] hover:to-[#004085] text-white border border-blue-400/40 rounded-xl text-xs font-bold transition-all shadow-lg glow-blue flex items-center gap-2" title="Sincronizar datos ahora">
-                    <i id="syncIcon" class="fa-solid fa-rotate text-white text-xs"></i>
-                    <span>Actualizar Datos</span>
+                
+                <button id="btnManualRefresh" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition shadow-lg">
+                    <i class="fa-solid fa-sync"></i> Actualizar Ahora
                 </button>
             </div>
         </header>
 
-        <!-- Metric Switcher Bar -->
-        <div class="glass-card rounded-2xl p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-            <div class="flex items-center gap-2.5">
-                <span class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                    <i class="fa-solid fa-sliders text-[#00a950] text-sm"></i> Variable de Análisis:
-                </span>
-                <span id="currentMetricLabel" class="text-xs font-extrabold text-white px-3 py-1 rounded-lg bg-gradient-to-r from-[#007bff] to-[#00a950] shadow-md border border-white/20">
-                    Cantidad de Operaciones
-                </span>
+        <!-- FILTROS Y CONTROLES DINÁMICOS -->
+        <section class="card-bg rounded-2xl p-6 shadow-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Canal -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1"><i class="fa-solid fa-network-wired mr-1"></i> Canal</label>
+                <select id="filterCanal" class="w-full bg-[#1e3e62] border border-gray-600 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400">
+                    <option value="ALL">Todos los Canales</option>
+                </select>
             </div>
 
-            <!-- Botones de Procesamiento con Alto Contraste -->
-            <div class="flex flex-wrap items-center gap-2.5">
-                <!-- BOTÓN PRINCIPAL: Procesar Cantidad de Operaciones -->
-                <button id="btnMetricOPS" onclick="setPrimaryMetric('OPS')" 
-                    class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 flex items-center justify-center gap-2 bg-[#007bff] hover:bg-[#0069d9] text-white shadow-lg glow-blue border-2 border-white/40">
-                    <i class="fa-solid fa-calculator text-sm"></i>
-                    <span>Procesar Cantidad de Operaciones</span>
-                </button>
-
-                <!-- Botón Procesar Monto BS -->
-                <button id="btnMetricBS" onclick="setPrimaryMetric('BS')" 
-                    class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-200 hover:text-white bg-slate-900/90 hover:bg-[#00a950] border border-slate-700 hover:border-[#00a950] transition-all flex items-center gap-2 shadow-sm">
-                    <i class="fa-solid fa-coins text-amber-400"></i>
-                    <span>Monto BS</span>
-                </button>
-
-                <!-- Botón Procesar Monto USD -->
-                <button id="btnMetricUSD" onclick="setPrimaryMetric('USD')" 
-                    class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-200 hover:text-white bg-slate-900/90 hover:bg-[#007bff] border border-slate-700 hover:border-[#007bff] transition-all flex items-center gap-2 shadow-sm">
-                    <i class="fa-solid fa-dollar-sign text-emerald-400"></i>
-                    <span>Monto USD</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Interactive Filter Bar -->
-        <div class="glass-card rounded-xl p-4 flex flex-wrap gap-4 items-center justify-between">
-            <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
-                <!-- Channel Filter -->
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-filter text-emerald-400 text-xs"></i>
-                    <label for="channelSelect" class="text-xs font-bold text-slate-200">Canal:</label>
-                    <select id="channelSelect" onchange="applyFilters()" class="bg-slate-950 text-white font-medium text-xs rounded-lg px-3 py-1.5 border border-slate-600 focus:border-[#00a950] focus:ring-1 focus:ring-[#00a950] focus:outline-none">
-                        <option value="ALL">Todos los canales</option>
-                    </select>
-                </div>
-
-                <!-- Start Month Filter -->
-                <div class="flex items-center gap-2">
-                    <label for="startMonthSelect" class="text-xs font-bold text-slate-200">Desde:</label>
-                    <select id="startMonthSelect" onchange="applyFilters()" class="bg-slate-950 text-white font-medium text-xs rounded-lg px-3 py-1.5 border border-slate-600 focus:border-[#00a950] focus:ring-1 focus:ring-[#00a950] focus:outline-none">
-                    </select>
-                </div>
-
-                <!-- End Month Filter -->
-                <div class="flex items-center gap-2">
-                    <label for="endMonthSelect" class="text-xs font-bold text-slate-200">Hasta:</label>
-                    <select id="endMonthSelect" onchange="applyFilters()" class="bg-slate-950 text-white font-medium text-xs rounded-lg px-3 py-1.5 border border-slate-600 focus:border-[#00a950] focus:ring-1 focus:ring-[#00a950] focus:outline-none">
-                    </select>
-                </div>
+            <!-- Sucursal -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1"><i class="fa-solid fa-building mr-1"></i> Sucursal</label>
+                <select id="filterSucursal" class="w-full bg-[#1e3e62] border border-gray-600 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400">
+                    <option value="ALL">Todas las Sucursales</option>
+                </select>
             </div>
 
-            <!-- Auto-refresh interval and Reset Filters -->
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 text-xs font-medium text-slate-300">
-                    <i class="fa-solid fa-clock-rotate-left text-cyan-400"></i>
-                    <span>Auto:</span>
-                    <select id="autoRefreshInterval" onchange="setupAutoRefresh()" class="bg-slate-950 border border-slate-600 text-white text-[11px] font-semibold rounded px-2.5 py-1 focus:outline-none focus:border-cyan-400">
-                        <option value="0">Manual</option>
-                        <option value="30000">Cada 30s</option>
-                        <option value="60000" selected>Cada 1m</option>
-                        <option value="300000">Cada 5m</option>
-                    </select>
-                </div>
-
-                <button onclick="resetFilters()" class="text-xs font-bold text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600 transition-colors flex items-center gap-1.5">
-                    <i class="fa-solid fa-xmark text-rose-400"></i> Limpiar Filtros
-                </button>
-            </div>
-        </div>
-
-        <!-- KPI Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <!-- Card 1: Total Operaciones -->
-            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-l-4 border-l-[#007bff]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">Total Operaciones</p>
-                        <h3 id="kpiOperaciones" class="text-2xl md:text-3xl font-black text-white mt-1">0</h3>
-                    </div>
-                    <div class="p-2.5 bg-[#007bff]/20 border border-[#007bff]/40 text-blue-300 rounded-xl shadow">
-                        <i class="fa-solid fa-arrow-up-1-9 text-lg"></i>
-                    </div>
-                </div>
-                <div class="mt-3 flex items-center gap-2 text-xs">
-                    <span id="kpiOperacionesMoM" class="font-bold text-emerald-300 flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-trend-up"></i> 0%
-                    </span>
-                    <span class="text-slate-300">vs mes previo</span>
-                </div>
+            <!-- Mes Inicial -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1"><i class="fa-solid fa-calendar mr-1"></i> Mes Desde (MM-AAAA)</label>
+                <select id="filterMesDesde" class="w-full bg-[#1e3e62] border border-gray-600 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400">
+                </select>
             </div>
 
-            <!-- Card 2: Monto Total -->
-            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-l-4 border-l-[#00a950]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p id="kpiMontoTitle" class="text-xs font-bold text-slate-300 uppercase tracking-wider">Monto Total (BS)</p>
-                        <h3 id="kpiMontoTotal" class="text-2xl md:text-3xl font-black text-white mt-1">0</h3>
-                    </div>
-                    <div class="p-2.5 bg-[#00a950]/20 border border-[#00a950]/40 text-emerald-300 rounded-xl shadow">
-                        <i class="fa-solid fa-sack-dollar text-lg"></i>
-                    </div>
-                </div>
-                <div class="mt-3 flex items-center gap-2 text-xs">
-                    <span id="kpiMontoMoM" class="font-bold text-emerald-300 flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-trend-up"></i> 0%
-                    </span>
-                    <span class="text-slate-300">vs mes previo</span>
-                </div>
+            <!-- Mes Final -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1"><i class="fa-solid fa-calendar-days mr-1"></i> Mes Hasta (MM-AAAA)</label>
+                <select id="filterMesHasta" class="w-full bg-[#1e3e62] border border-gray-600 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-green-400">
+                </select>
             </div>
 
-            <!-- Card 3: Ticket Promedio -->
-            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-l-4 border-l-cyan-400">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">Ticket Promedio</p>
-                        <h3 id="kpiTicketPromedio" class="text-2xl md:text-3xl font-black text-white mt-1">0</h3>
-                    </div>
-                    <div class="p-2.5 bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 rounded-xl shadow">
-                        <i class="fa-solid fa-receipt text-lg"></i>
-                    </div>
-                </div>
-                <div class="mt-3 flex items-center gap-2 text-xs">
-                    <span class="text-slate-300 font-medium">Monto medio por operación</span>
+            <!-- Botones Métricas / Selector de Métrica Activa -->
+            <div class="flex flex-col justify-end">
+                <label class="block text-xs font-semibold text-gray-300 mb-1"><i class="fa-solid fa-sliders mr-1"></i> Métrica Activa</label>
+                <div class="flex rounded-xl overflow-hidden border border-gray-600">
+                    <button data-metric="CantidadOperaciones" class="metric-btn flex-1 bg-green-600 hover:bg-green-500 text-xs py-2 px-1 font-bold transition">Ops</button>
+                    <button data-metric="MontoBS" class="metric-btn flex-1 bg-[#1e3e62] hover:bg-blue-600 text-xs py-2 px-1 font-bold transition">BS</button>
+                    <button data-metric="MontoUSD" class="metric-btn flex-1 bg-[#1e3e62] hover:bg-blue-600 text-xs py-2 px-1 font-bold transition">USD</button>
                 </div>
             </div>
+        </section>
 
-            <!-- Card 4: Top Canal Dominante -->
-            <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 hover:scale-[1.01] border-l-4 border-l-amber-400">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p id="kpiTopCanalTitle" class="text-xs font-bold text-slate-300 uppercase tracking-wider">Canal Dominante (Ops)</p>
-                        <h3 id="kpiTopCanal" class="text-xl md:text-2xl font-black text-amber-300 mt-1 truncate max-w-[170px]">-</h3>
-                    </div>
-                    <div class="p-2.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-xl shadow">
-                        <i class="fa-solid fa-trophy text-lg"></i>
-                    </div>
-                </div>
-                <div class="mt-3 flex items-center gap-2 text-xs text-slate-300">
-                    <span id="kpiTopCanalShare" class="font-extrabold text-white bg-amber-500/30 px-1.5 py-0.5 rounded border border-amber-400/40">0%</span>
-                    <span id="kpiTopCanalShareText" class="font-medium">del total de operaciones</span>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Charts Grid Section 1: Evolución Temporal (Ancho Completo) -->
-        <div class="glass-card rounded-2xl p-5 md:p-6">
-            <div class="flex justify-between items-center mb-4">
+        <!-- TARJETAS DE RESUMEN (KPIs) -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="card-bg p-5 rounded-2xl shadow-xl flex items-center justify-between border-l-4 border-green-500">
                 <div>
-                    <h2 class="text-base md:text-lg font-black text-white flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-[#00a950]"></i>
-                        <span id="lineChartTitle">Evolución Temporal de Cantidad de Operaciones</span>
-                    </h2>
-                    <p class="text-xs text-slate-300">Tendencia mensual de crecimiento o decrecimiento por cada canal a lo largo del tiempo</p>
+                    <p class="text-xs text-gray-400 font-semibold uppercase">Total Operaciones</p>
+                    <h3 id="kpiOps" class="text-2xl font-black mt-1">0</h3>
                 </div>
+                <div class="bg-green-500/20 p-3 rounded-xl text-green-400"><i class="fa-solid fa-hashtag text-xl"></i></div>
             </div>
-            <div class="relative h-80 w-full">
-                <canvas id="lineTrendChart"></canvas>
-            </div>
-        </div>
 
-        <!-- Charts Grid Section 2: Comparación Multi-Métrica y Participación Relativa -->
+            <div class="card-bg p-5 rounded-2xl shadow-xl flex items-center justify-between border-l-4 border-blue-500">
+                <div>
+                    <p class="text-xs text-gray-400 font-semibold uppercase">Total Monto (BS)</p>
+                    <h3 id="kpiBS" class="text-2xl font-black mt-1">0.00</h3>
+                </div>
+                <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400"><i class="fa-solid fa-wallet text-xl"></i></div>
+            </div>
+
+            <div class="card-bg p-5 rounded-2xl shadow-xl flex items-center justify-between border-l-4 border-emerald-400">
+                <div>
+                    <p class="text-xs text-gray-400 font-semibold uppercase">Total Monto (USD)</p>
+                    <h3 id="kpiUSD" class="text-2xl font-black mt-1">0.00</h3>
+                </div>
+                <div class="bg-emerald-500/20 p-3 rounded-xl text-emerald-400"><i class="fa-solid fa-dollar-sign text-xl"></i></div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE GRÁFICOS -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
-            <!-- Chart 2: Grouped Bar Chart -->
-            <div class="glass-card rounded-2xl p-5 md:p-6 flex flex-col justify-between">
+            <!-- Gráfico de Líneas Múltiple: Evolución Temporal por Canal -->
+            <div class="card-bg p-6 rounded-2xl shadow-2xl flex flex-col justify-between">
                 <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h2 class="text-base font-black text-white flex items-center gap-2">
-                            <i class="fa-solid fa-chart-column text-[#007bff]"></i>
-                            Comparación Multi-Métrica por Canal
-                        </h2>
-                        <p class="text-xs text-slate-300">Cantidad de operaciones (en miles) vs Monto total por cada canal</p>
-                    </div>
-                </div>
-                <div class="relative h-80 w-full">
-                    <canvas id="groupedBarChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Chart 3: Donut Chart - Participación Relativa (% Total) -->
-            <div class="glass-card rounded-2xl p-5 md:p-6 flex flex-col justify-between">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h2 class="text-base font-black text-white flex items-center gap-2">
-                            <i class="fa-solid fa-chart-pie text-emerald-400"></i>
-                            <span id="donutChartTitle">Participación por Cantidad de Operaciones (% Total)</span>
-                        </h2>
-                        <p id="donutChartSubtitle" class="text-xs text-slate-300">Porcentaje relativo de volumen según variable activa</p>
-                    </div>
-                </div>
-                <div class="relative h-80 w-full flex items-center justify-center">
-                    <canvas id="donutChart"></canvas>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Detailed Data Table -->
-        <div class="glass-card rounded-2xl p-5 md:p-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                <div>
-                    <h2 class="text-base font-black text-white flex items-center gap-2">
-                        <i class="fa-solid fa-table-list text-[#00a950]"></i>
-                        Resumen Agregado Mes a Mes por Canal
+                    <h2 class="text-lg font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-green-400"></i> Tendencia Mensual por Canal
                     </h2>
-                    <p class="text-xs text-slate-300">Consolidado mensual derivado estrictamente de las columnas Fecha, Canal, CantidadOperaciones, MontoBS y MontoUSD</p>
+                    <span id="lblMetricLine" class="text-xs bg-green-500/20 text-green-300 px-2.5 py-1 rounded-full font-semibold">Operaciones</span>
                 </div>
-                
-                <div class="flex items-center gap-2">
-                    <div class="relative">
-                        <input type="text" id="tableSearch" onkeyup="renderTable()" placeholder="Buscar canal o mes..." class="bg-slate-950 border border-slate-600 text-xs rounded-xl pl-8 pr-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-[#00a950] focus:ring-1 focus:ring-[#00a950] w-52">
-                        <i class="fa-solid fa-search absolute left-2.5 top-3 text-slate-400 text-xs"></i>
-                    </div>
+                <div class="relative h-72 w-full">
+                    <canvas id="lineChart"></canvas>
                 </div>
             </div>
 
-            <div class="overflow-x-auto rounded-xl border border-slate-700 shadow-inner">
-                <table class="w-full text-left text-xs text-slate-200">
-                    <thead class="bg-slate-950 text-slate-300 uppercase text-[11px] tracking-wider font-extrabold border-b border-slate-700">
-                        <tr>
-                            <th class="p-3.5">Mes / Año</th>
-                            <th class="p-3.5">Canal</th>
-                            <th class="p-3.5 text-right text-cyan-300">Cantidad de Operaciones</th>
-                            <th class="p-3.5 text-right text-emerald-300">Monto BS</th>
-                            <th class="p-3.5 text-right text-blue-300">Monto USD</th>
-                            <th class="p-3.5 text-right text-amber-300">Ticket Promedio (BS)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataTableBody" class="divide-y divide-slate-800/80 font-mono">
-                        <!-- Dynamic rows inserted here -->
-                    </tbody>
-                </table>
+            <!-- Gráfico de Barras Agrupadas: Comparativa por Canal (Ops vs Monto) -->
+            <div class="card-bg p-6 rounded-2xl shadow-2xl flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-blue-400"></i> Comparativa Cantidad vs Monto (BS)
+                    </h2>
+                    <span class="text-xs bg-blue-500/20 text-blue-300 px-2.5 py-1 rounded-full font-semibold">Agrupado</span>
+                </div>
+                <div class="relative h-72 w-full">
+                    <canvas id="barChart"></canvas>
+                </div>
             </div>
-            
-            <!-- Table Footer Summary -->
-            <div id="tableSummaryText" class="mt-3.5 text-xs text-slate-300 font-medium text-right">
-                Mostrando resumen de datos agregados
-            </div>
+
         </div>
+
+        <!-- GRÁFICO DE PARTICIPACIÓN Y RESUMEN TABULAR -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Gráfico de Participación (Doughnut) -->
+            <div class="card-bg p-6 rounded-2xl shadow-2xl flex flex-col justify-between lg:col-span-1">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-emerald-400"></i> Participación por Canal
+                    </h2>
+                </div>
+                <div class="relative h-64 w-full flex items-center justify-center">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tabla de Resumen Agregado Mes a Mes por Canal y Sucursal -->
+            <div class="card-bg p-6 rounded-2xl shadow-2xl lg:col-span-2 flex flex-col">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                    <h2 class="text-lg font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-table text-green-400"></i> Resumen Agregado Mes a Mes por Canal y Sucursal
+                    </h2>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <div class="relative w-full sm:w-64">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-search text-xs"></i>
+                            </span>
+                            <input type="text" id="searchTable" placeholder="Filtrar por canal o sucursal..." class="w-full bg-[#1e3e62] border border-gray-600 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-green-400">
+                        </div>
+                        <span id="rowCount" class="text-xs text-gray-400 whitespace-nowrap">0 reg.</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto max-h-72 overflow-y-auto rounded-xl border border-gray-700">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-[#1e3e62] sticky top-0 text-xs uppercase text-gray-300">
+                            <tr>
+                                <th class="p-3">Mes</th>
+                                <th class="p-3">Canal</th>
+                                <th class="p-3">Sucursal</th>
+                                <th class="p-3 text-right">Ops</th>
+                                <th class="p-3 text-right">Monto BS</th>
+                                <th class="p-3 text-right">Monto USD</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryTableBody" class="divide-y divide-gray-800 text-gray-200 text-xs">
+                            <!-- Inyectado dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="text-center text-xs text-gray-300 py-4">
+            Dashboard Dinámico de Canales &bull; Conexión en Tiempo Real con Google Sheets
+        </footer>
 
     </div>
 
+    <!-- SCRIPT DE LÓGICA Y PROCESAMIENTO -->
     <script>
-        // Google Sheets Published CSV Endpoint
-        const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRF1Z5Sr43NT-bTHI4WLHMTaRX_IVdXMCGUXPndG4nF8o-sbN95ZS7hIZMniQtgLPHTNclsUGhmHCds/pub?gid=0&single=true&output=csv";
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRF1Z5Sr43NT-bTHI4WLHMTaRX_IVdXMCGUXPndG4nF8o-sbN95ZS7hIZMniQtgLPHTNclsUGhmHCds/pub?gid=0&single=true&output=csv";
 
-        // Global Application State
-        let rawCSVData = [];
-        let aggregatedMonthlyData = [];
-        let primaryMetric = 'OPS'; // 'OPS' (CantidadOperaciones), 'BS' (MontoBS), 'USD' (MontoUSD)
-        let chartInstances = {};
-        let autoRefreshTimer = null;
+        let rawData = [];
+        let filteredData = [];
+        let activeMetric = "CantidadOperaciones"; // CantidadOperaciones, MontoBS, MontoUSD
+        let refreshTimer = null;
 
-        // Contrasting Color Palette for Dark Glass Theme
-        const palette = [
-            '#00a950', // Vibrant Green
-            '#007bff', // Electric Blue
-            '#f59e0b', // Amber / Gold
-            '#a855f7', // Vivid Purple
-            '#06b6d4', // Cyan
-            '#ec4899', // Pink
-            '#e11d48', // Crimson
-            '#14b8a6', // Teal
-            '#f97316', // Bright Orange
-            '#84cc16'  // Lime
-        ];
+        // Instancias de gráficos
+        let lineChartInstance = null;
+        let barChartInstance = null;
+        let doughnutChartInstance = null;
 
-        window.onload = function() {
-            // Iniciar conexión en tiempo real automáticamente
-            fetchGoogleSheetsData();
-            setupAutoRefresh();
-        };
+        // Cargar datos al iniciar
+        window.addEventListener("DOMContentLoaded", () => {
+            fetchData();
+            setupEventListeners();
+        });
 
-        function setupAutoRefresh() {
-            if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-            const interval = parseInt(document.getElementById('autoRefreshInterval').value, 10);
-            if (interval > 0) {
-                autoRefreshTimer = setInterval(() => {
-                    fetchGoogleSheetsData(false);
-                }, interval);
-            }
+        function setupEventListeners() {
+            document.getElementById("filterCanal").addEventListener("change", applyFilters);
+            document.getElementById("filterSucursal").addEventListener("change", applyFilters);
+            document.getElementById("filterMesDesde").addEventListener("change", applyFilters);
+            document.getElementById("filterMesHasta").addEventListener("change", applyFilters);
+            document.getElementById("searchTable").addEventListener("input", updateSummaryTable);
+            document.getElementById("btnManualRefresh").addEventListener("click", () => {
+                fetchData(true);
+            });
+
+            document.getElementById("refreshInterval").addEventListener("change", (e) => {
+                const seconds = parseInt(e.target.value);
+                if (refreshTimer) clearInterval(refreshTimer);
+                if (seconds > 0) {
+                    refreshTimer = setInterval(() => fetchData(false), seconds * 1000);
+                }
+            });
+
+            // Botones de Métrica
+            document.querySelectorAll(".metric-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    document.querySelectorAll(".metric-btn").forEach(b => {
+                        b.classList.remove("bg-green-600");
+                        b.classList.add("bg-[#1e3e62]");
+                    });
+                    e.target.classList.remove("bg-[#1e3e62]");
+                    e.target.classList.add("bg-green-600");
+                    activeMetric = e.target.getAttribute("data-metric");
+                    
+                    // Actualizar etiquetas visuales
+                    const labelMap = { "CantidadOperaciones": "Operaciones", "MontoBS": "Monto BS", "MontoUSD": "Monto USD" };
+                    document.getElementById("lblMetricLine").innerText = labelMap[activeMetric];
+
+                    updateCharts();
+                });
+            });
+
+            // Inicializar timer por defecto (1 min)
+            refreshTimer = setInterval(() => fetchData(false), 60000);
         }
 
-        // Live Fetch from Google Sheets using PapaParse
-        function fetchGoogleSheetsData(isManual = false) {
-            const syncIcon = document.getElementById('syncIcon');
-            if (syncIcon) syncIcon.classList.add('fa-spin');
-            
-            updateConnectionStatus('syncing', 'Descargando datos...');
-
-            // Agregar timestamp para evitar caché del navegador y obtener datos actualizados
-            const cacheBusterUrl = `${GOOGLE_SHEETS_CSV_URL}&_ts=${Date.now()}`;
-
-            Papa.parse(cacheBusterUrl, {
+        function fetchData(showNotification = false) {
+            Papa.parse(CSV_URL, {
                 download: true,
                 header: true,
                 skipEmptyLines: true,
-                dynamicTyping: true,
                 complete: function(results) {
-                    if (syncIcon) syncIcon.classList.remove('fa-spin');
+                    rawData = results.data.map(row => {
+                        return {
+                            Fecha: (row.Fecha || "").trim(),
+                            Canal: (row.Canal || "Desconocido").trim(),
+                            Sucursal: (row.Sucursal || "Desconocida").trim(),
+                            CantidadOperaciones: parseFloat(row.CantidadOperaciones) || 0,
+                            MontoBS: parseFloat(row.MontoBS) || 0,
+                            MontoUSD: parseFloat(row.MontoUSD) || 0,
+                            MesKey: extractMonthKey(row.Fecha || "")
+                        };
+                    }).filter(item => item.MesKey !== "");
 
-                    if (results.data && results.data.length > 0) {
-                        processCSVData(results.data);
-                        updateConnectionStatus('online', `Google Sheets en vivo (${results.data.length} filas)`);
-                        updateTimestamp();
-                    } else {
-                        updateConnectionStatus('error', 'CSV sin registros válidos');
+                    initializeFilterOptions();
+                    applyFilters();
+                    if (showNotification) {
+                        alertCustom("Datos actualizados correctamente desde Google Sheets.");
                     }
                 },
                 error: function(err) {
-                    if (syncIcon) syncIcon.classList.remove('fa-spin');
-                    console.error("Error al obtener datos de Google Sheets:", err);
-                    updateConnectionStatus('error', 'Error de conexión');
+                    console.error("Error al cargar el CSV:", err);
                 }
             });
         }
 
-        function updateConnectionStatus(type, message) {
-            const statusText = document.getElementById('dataStatusText');
-            const pulse = document.getElementById('statusPulse');
-            statusText.innerText = message;
-
-            if (type === 'online') {
-                pulse.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
-            } else if (type === 'syncing') {
-                pulse.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping";
-            } else {
-                pulse.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
-            }
-        }
-
-        function updateTimestamp() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('lastUpdatedText').innerText = `• Sincronizado: ${timeStr}`;
-        }
-
-        function cleanNumber(val) {
-            if (typeof val === 'number') return isNaN(val) ? 0 : val;
-            if (!val) return 0;
-            let str = String(val).trim().replace(/\s/g, '');
-            if (str.includes(',') && str.includes('.')) {
-                if (str.lastIndexOf(',') > str.lastIndexOf('.')) {
-                    str = str.replace(/\./g, '').replace(',', '.');
+        function extractMonthKey(dateStr) {
+            if (!dateStr) return "";
+            let parts = dateStr.split(/[\/\-]/);
+            if (parts.length >= 3) {
+                if (parts[0].length === 4) {
+                    return `${parts[1]}-${parts[0]}`;
                 } else {
-                    str = str.replace(/,/g, '');
+                    return `${parts[1]}-${parts[2]}`;
                 }
-            } else if (str.includes(',')) {
-                str = str.replace(',', '.');
             }
-            const parsed = parseFloat(str);
-            return isNaN(parsed) ? 0 : parsed;
+            return dateStr.substring(0, 7);
         }
 
-        function processCSVData(data) {
-            rawCSVData = data;
-            const monthlyAgg = {};
+        function initializeFilterOptions() {
+            const canalesSet = new Set();
+            const sucursalesSet = new Set();
+            const mesesSet = new Set();
 
-            data.forEach(row => {
-                const getCol = (names) => {
-                    for (const n of names) {
-                        for (const k in row) {
-                            if (k.trim().toLowerCase() === n.toLowerCase()) return row[k];
-                        }
-                    }
-                    return null;
-                };
-
-                const rawDate = getCol(['Fecha', 'Date']);
-                const canal = String(getCol(['Canal', 'Channel']) || 'Sin Canal').trim();
-                const ops = cleanNumber(getCol(['CantidadOperaciones', 'Operaciones', 'CantOperaciones', 'Cantidad']));
-                const bs = cleanNumber(getCol(['MontoBS', 'Monto_BS', 'BS']));
-                const usd = cleanNumber(getCol(['MontoUSD', 'Monto_USD', 'USD']));
-
-                if (!rawDate) return;
-
-                // Formatos de fecha DD/MM/YYYY o YYYY-MM-DD convertidos a YYYY-MM
-                let monthKey = "";
-                const strDate = String(rawDate).trim();
-                
-                if (strDate.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/)) {
-                    const parts = strDate.split(/[\/-]/);
-                    const month = parts[1].padStart(2, '0');
-                    const year = parts[2];
-                    monthKey = `${year}-${month}`;
-                } else if (strDate.match(/^(\d{4})[\/-](\d{1,2})/)) {
-                    const parts = strDate.split(/[\/-]/);
-                    const year = parts[0];
-                    const month = parts[1].padStart(2, '0');
-                    monthKey = `${year}-${month}`;
-                } else {
-                    monthKey = strDate.substring(0, 7);
-                }
-
-                if (!monthKey || monthKey.length < 6) return;
-
-                const aggKey = `${monthKey}||${canal}`;
-
-                if (!monthlyAgg[aggKey]) {
-                    monthlyAgg[aggKey] = {
-                        month: monthKey,
-                        canal: canal,
-                        cantidadOperaciones: 0,
-                        montoBS: 0,
-                        montoUSD: 0
-                    };
-                }
-
-                monthlyAgg[aggKey].cantidadOperaciones += ops;
-                monthlyAgg[aggKey].montoBS += bs;
-                monthlyAgg[aggKey].montoUSD += usd;
+            rawData.forEach(item => {
+                if (item.Canal) canalesSet.add(item.Canal);
+                if (item.Sucursal) sucursalesSet.add(item.Sucursal);
+                if (item.MesKey) mesesSet.add(item.MesKey);
             });
 
-            aggregatedMonthlyData = Object.values(monthlyAgg);
+            const sortedMeses = Array.from(mesesSet).sort();
 
-            // Poblar Selectores de Filtro
-            populateFilters();
-
-            // Refrescar Dashboard
-            applyFilters();
-        }
-
-        function populateFilters() {
-            const channels = [...new Set(aggregatedMonthlyData.map(d => d.canal))].sort();
-            const months = [...new Set(aggregatedMonthlyData.map(d => d.month))].sort();
-
-            const currentChannel = document.getElementById('channelSelect').value;
-            const currentStart = document.getElementById('startMonthSelect').value;
-            const currentEnd = document.getElementById('endMonthSelect').value;
-
-            const channelSelect = document.getElementById('channelSelect');
-            channelSelect.innerHTML = '<option value="ALL">Todos los canales</option>';
-            channels.forEach(ch => {
-                const opt = document.createElement('option');
-                opt.value = ch;
-                opt.textContent = ch;
-                channelSelect.appendChild(opt);
+            const selCanal = document.getElementById("filterCanal");
+            const currentCanal = selCanal.value;
+            selCanal.innerHTML = '<option value="ALL">Todos los Canales</option>';
+            canalesSet.forEach(c => {
+                selCanal.innerHTML += `<option value="${c}">${c}</option>`;
             });
-            if (channels.includes(currentChannel)) channelSelect.value = currentChannel;
+            selCanal.value = canalesSet.has(currentCanal) ? currentCanal : "ALL";
 
-            const startSelect = document.getElementById('startMonthSelect');
-            const endSelect = document.getElementById('endMonthSelect');
-            startSelect.innerHTML = '';
-            endSelect.innerHTML = '';
+            const selSuc = document.getElementById("filterSucursal");
+            const currentSuc = selSuc.value;
+            selSuc.innerHTML = '<option value="ALL">Todas las Sucursales</option>';
+            sucursalesSet.forEach(s => {
+                selSuc.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+            selSuc.value = sucursalesSet.has(currentSuc) ? currentSuc : "ALL";
 
-            months.forEach(m => {
-                const opt1 = document.createElement('option');
-                opt1.value = m;
-                opt1.textContent = m;
-                startSelect.appendChild(opt1);
+            const selDesde = document.getElementById("filterMesDesde");
+            const selHasta = document.getElementById("filterMesHasta");
+            const currentDesde = selDesde.value;
+            const currentHasta = selHasta.value;
 
-                const opt2 = document.createElement('option');
-                opt2.value = m;
-                opt2.textContent = m;
-                endSelect.appendChild(opt2);
+            selDesde.innerHTML = '';
+            selHasta.innerHTML = '';
+
+            sortedMeses.forEach(m => {
+                selDesde.innerHTML += `<option value="${m}">${m}</option>`;
+                selHasta.innerHTML += `<option value="${m}">${m}</option>`;
             });
 
-            if (months.length > 0) {
-                startSelect.value = (months.includes(currentStart)) ? currentStart : months[0];
-                endSelect.value = (months.includes(currentEnd)) ? currentEnd : months[months.length - 1];
-            }
-        }
-
-        function resetFilters() {
-            document.getElementById('channelSelect').value = 'ALL';
-            const months = [...new Set(aggregatedMonthlyData.map(d => d.month))].sort();
-            if (months.length > 0) {
-                document.getElementById('startMonthSelect').value = months[0];
-                document.getElementById('endMonthSelect').value = months[months.length - 1];
-            }
-            applyFilters();
-        }
-
-        // Dedicated Metric Switching Function
-        function setPrimaryMetric(metric) {
-            primaryMetric = metric;
-
-            const btnOPS = document.getElementById('btnMetricOPS');
-            const btnBS = document.getElementById('btnMetricBS');
-            const btnUSD = document.getElementById('btnMetricUSD');
-            const labelMetric = document.getElementById('currentMetricLabel');
-
-            const inactiveClass = "px-4 py-2.5 rounded-xl text-xs font-bold text-slate-200 hover:text-white bg-slate-900/90 border border-slate-700 transition-all flex items-center justify-center gap-2 shadow-sm";
-            
-            btnOPS.className = inactiveClass;
-            btnBS.className = inactiveClass;
-            btnUSD.className = inactiveClass;
-
-            if (metric === 'OPS') {
-                btnOPS.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 flex items-center justify-center gap-2 bg-[#007bff] hover:bg-[#0069d9] text-white shadow-lg glow-blue border-2 border-white/40";
-                labelMetric.innerText = "Cantidad de Operaciones";
-                labelMetric.className = "text-xs font-extrabold text-white px-3 py-1 rounded-lg bg-gradient-to-r from-[#007bff] to-[#0056b3] shadow-md border border-white/20";
-                
-                document.getElementById('lineChartTitle').innerText = "Evolución Temporal de Cantidad de Operaciones";
-                document.getElementById('donutChartTitle').innerText = "Participación por Cantidad de Operaciones (% Total)";
-                document.getElementById('donutChartSubtitle').innerText = "Porcentaje relativo de operaciones según variable activa";
-            } else if (metric === 'BS') {
-                btnBS.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 flex items-center justify-center gap-2 bg-[#00a950] hover:bg-[#008f43] text-white shadow-lg glow-accent border-2 border-white/40";
-                labelMetric.innerText = "Monto en Bolivianos (BS)";
-                labelMetric.className = "text-xs font-extrabold text-white px-3 py-1 rounded-lg bg-gradient-to-r from-[#00a950] to-[#016833] shadow-md border border-white/20";
-
-                document.getElementById('lineChartTitle').innerText = "Evolución Temporal de Monto (BS)";
-                document.getElementById('donutChartTitle').innerText = "Participación por Monto BS (% Total)";
-                document.getElementById('donutChartSubtitle').innerText = "Porcentaje relativo de monto en Bolivianos según variable activa";
-            } else if (metric === 'USD') {
-                btnUSD.className = "flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-black transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-[#007bff] to-[#00a950] text-white shadow-lg glow-blue border-2 border-white/40";
-                labelMetric.innerText = "Monto en Dólares (USD)";
-                labelMetric.className = "text-xs font-extrabold text-white px-3 py-1 rounded-lg bg-gradient-to-r from-[#007bff] to-[#00a950] shadow-md border border-white/20";
-
-                document.getElementById('lineChartTitle').innerText = "Evolución Temporal de Monto (USD)";
-                document.getElementById('donutChartTitle').innerText = "Participación por Monto USD (% Total)";
-                document.getElementById('donutChartSubtitle').innerText = "Porcentaje relativo de monto en Dólares según variable activa";
-            }
-
-            applyFilters();
-        }
-
-        function getMetricValue(item) {
-            if (primaryMetric === 'OPS') return item.cantidadOperaciones;
-            if (primaryMetric === 'BS') return item.montoBS;
-            return item.montoUSD;
-        }
-
-        function formatMetricValue(val) {
-            if (primaryMetric === 'OPS') {
-                return val.toLocaleString('es-BO') + ' ops';
-            } else if (primaryMetric === 'BS') {
-                return 'Bs ' + val.toLocaleString('es-BO', { maximumFractionDigits: 0 });
-            } else {
-                return '$ ' + val.toLocaleString('es-BO', { maximumFractionDigits: 0 });
+            if (sortedMeses.length > 0) {
+                selDesde.value = sortedMeses.includes(currentDesde) ? currentDesde : sortedMeses[0];
+                selHasta.value = sortedMeses.includes(currentHasta) ? currentHasta : sortedMeses[sortedMeses.length - 1];
             }
         }
 
         function applyFilters() {
-            const selectedChannel = document.getElementById('channelSelect').value;
-            const startMonth = document.getElementById('startMonthSelect').value;
-            const endMonth = document.getElementById('endMonthSelect').value;
+            const canalVal = document.getElementById("filterCanal").value;
+            const sucursalVal = document.getElementById("filterSucursal").value;
+            const mesDesde = document.getElementById("filterMesDesde").value;
+            const mesHasta = document.getElementById("filterMesHasta").value;
 
-            let filtered = aggregatedMonthlyData.filter(item => {
-                const channelMatch = selectedChannel === 'ALL' || item.canal === selectedChannel;
-                const monthMatch = (!startMonth || item.month >= startMonth) && (!endMonth || item.month <= endMonth);
-                return channelMatch && monthMatch;
+            filteredData = rawData.filter(item => {
+                const matchCanal = (canalVal === "ALL" || item.Canal === canalVal);
+                const matchSucursal = (sucursalVal === "ALL" || item.Sucursal === sucursalVal);
+                const matchMes = (item.MesKey >= mesDesde && item.MesKey <= mesHasta);
+                return matchCanal && matchSucursal && matchMes;
             });
 
-            updateKPIs(filtered);
-            renderCharts(filtered);
-            renderTable(filtered);
+            updateKPIs();
+            updateCharts();
+            updateSummaryTable();
         }
 
-        function updateKPIs(data) {
-            if (data.length === 0) {
-                document.getElementById('kpiOperaciones').innerText = "0";
-                document.getElementById('kpiMontoTotal').innerText = "0";
-                document.getElementById('kpiTicketPromedio').innerText = "0";
-                document.getElementById('kpiTopCanal').innerText = "-";
-                document.getElementById('kpiTopCanalShare').innerText = "0%";
-                return;
-            }
+        function updateKPIs() {
+            let totalOps = 0;
+            let totalBS = 0;
+            let totalUSD = 0;
 
-            const totalOps = data.reduce((acc, curr) => acc + curr.cantidadOperaciones, 0);
-            const totalBS = data.reduce((acc, curr) => acc + curr.montoBS, 0);
-            const totalUSD = data.reduce((acc, curr) => acc + curr.montoUSD, 0);
-            const avgTicket = totalOps > 0 ? (totalBS / totalOps) : 0;
-
-            document.getElementById('kpiOperaciones').innerText = totalOps.toLocaleString('es-BO');
-            document.getElementById('kpiMontoTitle').innerText = primaryMetric === 'USD' ? 'Monto Total (USD)' : 'Monto Total (BS)';
-            document.getElementById('kpiMontoTotal').innerText = primaryMetric === 'USD'
-                ? '$ ' + totalUSD.toLocaleString('es-BO', { maximumFractionDigits: 0 })
-                : 'Bs ' + totalBS.toLocaleString('es-BO', { maximumFractionDigits: 0 });
-            
-            document.getElementById('kpiTicketPromedio').innerText = 'Bs ' + avgTicket.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-            // Dominant Channel based on current active metric
-            const channelMetricSums = {};
-            data.forEach(d => {
-                const val = getMetricValue(d);
-                channelMetricSums[d.canal] = (channelMetricSums[d.canal] || 0) + val;
+            filteredData.forEach(item => {
+                totalOps += item.CantidadOperaciones;
+                totalBS += item.MontoBS;
+                totalUSD += item.MontoUSD;
             });
 
-            let topCanal = "-";
-            let topVal = 0;
-            const totalMetricSum = Object.values(channelMetricSums).reduce((a, b) => a + b, 0);
-
-            Object.keys(channelMetricSums).forEach(c => {
-                if (channelMetricSums[c] > topVal) {
-                    topVal = channelMetricSums[c];
-                    topCanal = c;
-                }
-            });
-
-            const topShare = totalMetricSum > 0 ? ((topVal / totalMetricSum) * 100).toFixed(1) : 0;
-            
-            document.getElementById('kpiTopCanalTitle').innerText = primaryMetric === 'OPS' 
-                ? 'Canal Dominante (Ops)' 
-                : (primaryMetric === 'BS' ? 'Canal Dominante (BS)' : 'Canal Dominante (USD)');
-            document.getElementById('kpiTopCanal').innerText = topCanal;
-            document.getElementById('kpiTopCanalShare').innerText = `${topShare}%`;
-            document.getElementById('kpiTopCanalShareText').innerText = primaryMetric === 'OPS' ? 'del total de operaciones' : 'del monto acumulado';
-
-            // Crecimiento MoM último mes vs mes previo
-            const months = [...new Set(data.map(d => d.month))].sort();
-            if (months.length >= 2) {
-                const currM = months[months.length - 1];
-                const prevM = months[months.length - 2];
-
-                const currOps = data.filter(d => d.month === currM).reduce((a, b) => a + b.cantidadOperaciones, 0);
-                const prevOps = data.filter(d => d.month === prevM).reduce((a, b) => a + b.cantidadOperaciones, 0);
-
-                const currBS = data.filter(d => d.month === currM).reduce((a, b) => a + b.montoBS, 0);
-                const prevBS = data.filter(d => d.month === prevM).reduce((a, b) => a + b.montoBS, 0);
-
-                const opsMoM = prevOps > 0 ? (((currOps - prevOps) / prevOps) * 100).toFixed(1) : 0;
-                const montoMoM = prevBS > 0 ? (((currBS - prevBS) / prevBS) * 100).toFixed(1) : 0;
-
-                document.getElementById('kpiOperacionesMoM').innerHTML = opsMoM >= 0 
-                    ? `<i class="fa-solid fa-arrow-trend-up text-emerald-300"></i> +${opsMoM}%`
-                    : `<i class="fa-solid fa-arrow-trend-down text-rose-400"></i> ${opsMoM}%`;
-
-                document.getElementById('kpiMontoMoM').innerHTML = montoMoM >= 0 
-                    ? `<i class="fa-solid fa-arrow-trend-up text-emerald-300"></i> +${montoMoM}%`
-                    : `<i class="fa-solid fa-arrow-trend-down text-rose-400"></i> ${montoMoM}%`;
-            } else {
-                document.getElementById('kpiOperacionesMoM').innerHTML = `<i class="fa-solid fa-minus text-slate-300"></i> N/A`;
-                document.getElementById('kpiMontoMoM').innerHTML = `<i class="fa-solid fa-minus text-slate-300"></i> N/A`;
-            }
+            document.getElementById("kpiOps").innerText = totalOps.toLocaleString();
+            document.getElementById("kpiBS").innerText = totalBS.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById("kpiUSD").innerText = totalUSD.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
 
-        function renderCharts(data) {
-            const chartDefaults = {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: { 
-                            color: '#e2e8f0', 
-                            font: { family: 'Inter', size: 12, weight: 'bold' },
-                            padding: 14,
-                            usePointStyle: true
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: '#030d1a',
-                        titleColor: '#ffffff',
-                        bodyColor: '#e2e8f0',
-                        borderColor: '#00a950',
-                        borderWidth: 1.5,
-                        padding: 12,
-                        cornerRadius: 8
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: { color: '#cbd5e1', font: { size: 11, weight: '500' } },
-                        grid: { color: 'rgba(255, 255, 255, 0.08)' }
-                    },
-                    y: {
-                        ticks: { color: '#cbd5e1', font: { size: 11, weight: '500' } },
-                        grid: { color: 'rgba(255, 255, 255, 0.08)' }
-                    }
-                }
-            };
+        function updateCharts() {
+            updateLineChart();
+            updateBarChart();
+            updateDoughnutChart();
+        }
 
-            const months = [...new Set(data.map(d => d.month))].sort();
-            const channels = [...new Set(data.map(d => d.canal))].sort();
-
-            Object.keys(chartInstances).forEach(key => {
-                if (chartInstances[key]) chartInstances[key].destroy();
+        function updateLineChart() {
+            const ctx = document.getElementById("lineChart").getContext("2d");
+            
+            const mesesSet = new Set();
+            const canalesSet = new Set();
+            filteredData.forEach(item => {
+                mesesSet.add(item.MesKey);
+                canalesSet.add(item.Canal);
             });
 
-            // 1. CHART 1: Multi-line Trend Chart
-            const lineDatasets = channels.map((ch, idx) => {
-                const chData = months.map(m => {
-                    const match = data.find(d => d.month === m && d.canal === ch);
-                    return match ? getMetricValue(match) : 0;
+            const sortedMeses = Array.from(mesesSet).sort();
+            const canales = Array.from(canalesSet);
+            const colorPalette = ["#00a950", "#007bff", "#ffc107", "#ff5722", "#9c27b0", "#00bcd4"];
+            
+            const datasets = canales.map((canal, idx) => {
+                const dataPoints = sortedMeses.map(mes => {
+                    const match = filteredData.filter(d => d.MesKey === mes && d.Canal === canal);
+                    return match.reduce((sum, curr) => sum + curr[activeMetric], 0);
                 });
+
                 return {
-                    label: ch,
-                    data: chData,
-                    borderColor: palette[idx % palette.length],
-                    backgroundColor: palette[idx % palette.length],
-                    tension: 0.35,
+                    label: canal,
+                    data: dataPoints,
+                    borderColor: colorPalette[idx % colorPalette.length],
+                    backgroundColor: colorPalette[idx % colorPalette.length],
                     borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 7
+                    tension: 0.3,
+                    fill: false
                 };
             });
 
-            chartInstances.lineTrend = new Chart(document.getElementById('lineTrendChart'), {
+            if (lineChartInstance) lineChartInstance.destroy();
+
+            lineChartInstance = new Chart(ctx, {
                 type: 'line',
-                data: { labels: months, datasets: lineDatasets },
+                data: {
+                    labels: sortedMeses,
+                    datasets: datasets
+                },
                 options: {
-                    ...chartDefaults,
+                    responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
-                        ...chartDefaults.plugins,
-                        tooltip: {
-                            ...chartDefaults.plugins.tooltip,
-                            callbacks: {
-                                label: ctx => `${ctx.dataset.label}: ${formatMetricValue(ctx.raw)}`
-                            }
-                        }
+                        legend: { labels: { color: '#ffffff', font: { size: 11 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#cbd5e1' }, grid: { color: '#1e3e62' } },
+                        y: { ticks: { color: '#cbd5e1' }, grid: { color: '#1e3e62' } }
                     }
                 }
             });
+        }
 
-            // 2. CHART 2: Grouped Bar Chart (Operaciones vs Monto por Canal)
-            const channelAgg = channels.map(ch => {
-                const chItems = data.filter(d => d.canal === ch);
-                const totalOps = chItems.reduce((a, b) => a + b.cantidadOperaciones, 0);
-                const totalBS = chItems.reduce((a, b) => a + b.montoBS, 0);
-                const totalUSD = chItems.reduce((a, b) => a + b.montoUSD, 0);
-                const activeVal = chItems.reduce((a, b) => a + getMetricValue(b), 0);
-                return { canal: ch, ops: totalOps, bs: totalBS, usd: totalUSD, activeMetricVal: activeVal };
+        function updateBarChart() {
+            const ctx = document.getElementById("barChart").getContext("2d");
+
+            const canalMap = {};
+            filteredData.forEach(item => {
+                if (!canalMap[item.Canal]) {
+                    canalMap[item.Canal] = { ops: 0, bs: 0 };
+                }
+                canalMap[item.Canal].ops += item.CantidadOperaciones;
+                canalMap[item.Canal].bs += item.MontoBS;
             });
 
-            const isUSD = primaryMetric === 'USD';
-            const montoLabel = isUSD ? 'Monto Total (en miles USD)' : 'Monto Total (en mill. BS)';
-            const montoData = isUSD 
-                ? channelAgg.map(c => (c.usd / 1000).toFixed(1))
-                : channelAgg.map(c => (c.bs / 1000000).toFixed(2));
+            const canales = Object.keys(canalMap);
+            const opsData = canales.map(c => canalMap[c].ops);
+            const bsData = canales.map(c => canalMap[c].bs);
 
-            chartInstances.groupedBar = new Chart(document.getElementById('groupedBarChart'), {
+            if (barChartInstance) barChartInstance.destroy();
+
+            barChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: channelAgg.map(c => c.canal),
+                    labels: canales,
                     datasets: [
                         {
-                            label: 'Cantidad Operaciones (en miles)',
-                            data: channelAgg.map(c => (c.ops / 1000).toFixed(1)),
-                            backgroundColor: '#007bff',
-                            borderColor: '#ffffff',
-                            borderWidth: 1,
+                            label: 'Cantidad Operaciones',
+                            data: opsData,
+                            backgroundColor: '#00a950',
                             borderRadius: 6
                         },
                         {
-                            label: montoLabel,
-                            data: montoData,
-                            backgroundColor: '#00a950',
-                            borderColor: '#ffffff',
-                            borderWidth: 1,
+                            label: 'Monto BS (en miles)',
+                            data: bsData.map(val => val / 1000),
+                            backgroundColor: '#007bff',
                             borderRadius: 6
                         }
                     ]
                 },
                 options: {
-                    ...chartDefaults,
+                    responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
-                        ...chartDefaults.plugins,
-                        tooltip: {
-                            ...chartDefaults.plugins.tooltip,
-                            callbacks: {
-                                label: ctx => {
-                                    if (ctx.datasetIndex === 0) {
-                                        return `${ctx.dataset.label}: ${Number(ctx.raw).toLocaleString()}k ops`;
-                                    } else {
-                                        return isUSD 
-                                            ? `${ctx.dataset.label}: $ ${Number(ctx.raw).toLocaleString()}k`
-                                            : `${ctx.dataset.label}: Bs ${Number(ctx.raw).toLocaleString()}M`;
-                                    }
-                                }
-                            }
-                        }
+                        legend: { labels: { color: '#ffffff', font: { size: 11 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#cbd5e1' }, grid: { display: false } },
+                        y: { ticks: { color: '#cbd5e1' }, grid: { color: '#1e3e62' } }
                     }
                 }
             });
+        }
 
-            // 3. CHART 3: Donut Chart - Participación por Cantidad de Operación o Monto USD/BS (% Total)
-            const totalDonutVal = channelAgg.reduce((a, b) => a + b.activeMetricVal, 0);
+        function updateDoughnutChart() {
+            const ctx = document.getElementById("doughnutChart").getContext("2d");
 
-            chartInstances.donut = new Chart(document.getElementById('donutChart'), {
+            const canalMap = {};
+            filteredData.forEach(item => {
+                canalMap[item.Canal] = (canalMap[item.Canal] || 0) + item[activeMetric];
+            });
+
+            const labels = Object.keys(canalMap);
+            const data = Object.values(canalMap);
+
+            if (doughnutChartInstance) doughnutChartInstance.destroy();
+
+            doughnutChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: channelAgg.map(c => c.canal),
+                    labels: labels,
                     datasets: [{
-                        data: channelAgg.map(c => c.activeMetricVal),
-                        backgroundColor: channelAgg.map((_, i) => palette[i % palette.length]),
-                        borderColor: '#020b18',
-                        borderWidth: 2.5,
-                        hoverOffset: 8
+                        data: data,
+                        backgroundColor: ['#00a950', '#007bff', '#ffc107', '#ff5722', '#9c27b0', '#00bcd4'],
+                        borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { 
-                                color: '#f1f5f9', 
-                                font: { family: 'Inter', size: 11, weight: 'bold' },
-                                padding: 12,
-                                usePointStyle: true
-                            }
-                        },
-                        tooltip: {
-                            ...chartDefaults.plugins.tooltip,
-                            callbacks: {
-                                label: ctx => {
-                                    const val = ctx.raw || 0;
-                                    const pct = totalDonutVal > 0 ? ((val / totalDonutVal) * 100).toFixed(1) : '0.0';
-                                    return ` ${ctx.label}: ${pct}% (${formatMetricValue(val)})`;
-                                }
-                            }
-                        }
-                    },
-                    cutout: '60%'
+                        legend: { position: 'bottom', labels: { color: '#ffffff', font: { size: 10 } } }
+                    }
                 }
             });
         }
 
-        function renderTable(dataOverride) {
-            const selectedChannel = document.getElementById('channelSelect').value;
-            const startMonth = document.getElementById('startMonthSelect').value;
-            const endMonth = document.getElementById('endMonthSelect').value;
-            const searchTerm = document.getElementById('tableSearch').value.toLowerCase();
+        function updateSummaryTable() {
+            const tbody = document.getElementById("summaryTableBody");
+            tbody.innerHTML = "";
 
-            let data = dataOverride || aggregatedMonthlyData.filter(item => {
-                const channelMatch = selectedChannel === 'ALL' || item.canal === selectedChannel;
-                const monthMatch = (!startMonth || item.month >= startMonth) && (!endMonth || item.month <= endMonth);
-                return channelMatch && monthMatch;
+            const searchQuery = (document.getElementById("searchTable").value || "").toLowerCase().trim();
+
+            const aggregatedMap = {};
+            filteredData.forEach(item => {
+                const key = `${item.MesKey}|${item.Canal}|${item.Sucursal}`;
+                if (!aggregatedMap[key]) {
+                    aggregatedMap[key] = {
+                        Mes: item.MesKey,
+                        Canal: item.Canal,
+                        Sucursal: item.Sucursal,
+                        CantidadOperaciones: 0,
+                        MontoBS: 0,
+                        MontoUSD: 0
+                    };
+                }
+                aggregatedMap[key].CantidadOperaciones += item.CantidadOperaciones;
+                aggregatedMap[key].MontoBS += item.MontoBS;
+                aggregatedMap[key].MontoUSD += item.MontoUSD;
             });
 
-            if (searchTerm) {
-                data = data.filter(d => d.canal.toLowerCase().includes(searchTerm) || d.month.toLowerCase().includes(searchTerm));
+            let rows = Object.values(aggregatedMap).sort((a, b) => b.Mes.localeCompare(a.Mes));
+
+            // Aplicar filtro de búsqueda por Canal o Sucursal
+            if (searchQuery !== "") {
+                rows = rows.filter(row => 
+                    row.Canal.toLowerCase().includes(searchQuery) || 
+                    row.Sucursal.toLowerCase().includes(searchQuery)
+                );
             }
 
-            // Ordenar por mes descendente y luego canal ascendente
-            data.sort((a, b) => b.month.localeCompare(a.month) || a.canal.localeCompare(b.canal));
+            document.getElementById("rowCount").innerText = `${rows.length} reg.`;
 
-            const tbody = document.getElementById('dataTableBody');
-            tbody.innerHTML = '';
-
-            if (data.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center py-6 text-slate-300 font-sans font-medium">
-                            No se encontraron registros que coincidan con los filtros seleccionados.
-                        </td>
-                    </tr>
-                `;
-                document.getElementById('tableSummaryText').innerText = "0 registros mostrados";
-                return;
-            }
-
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-blue-950/40 transition-colors";
-
-                const avgTicket = row.cantidadOperaciones > 0 ? (row.montoBS / row.cantidadOperaciones) : 0;
-
+            rows.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-[#1e3e62]/50 transition";
                 tr.innerHTML = `
-                    <td class="p-3.5 font-bold text-[#00a950]">${row.month}</td>
-                    <td class="p-3.5 font-sans font-semibold text-white">${row.canal}</td>
-                    <td class="p-3.5 text-right font-bold text-cyan-300">${row.cantidadOperaciones.toLocaleString('es-BO')}</td>
-                    <td class="p-3.5 text-right text-emerald-200">Bs ${row.montoBS.toLocaleString('es-BO', { maximumFractionDigits: 2 })}</td>
-                    <td class="p-3.5 text-right text-blue-200">$ ${row.montoUSD.toLocaleString('es-BO', { maximumFractionDigits: 2 })}</td>
-                    <td class="p-3.5 text-right font-medium text-amber-300">Bs ${avgTicket.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td class="p-3 font-semibold">${row.Mes}</td>
+                    <td class="p-3">${row.Canal}</td>
+                    <td class="p-3">${row.Sucursal}</td>
+                    <td class="p-3 text-right">${row.CantidadOperaciones.toLocaleString()}</td>
+                    <td class="p-3 text-right">${row.MontoBS.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td class="p-3 text-right">${row.MontoUSD.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                 `;
                 tbody.appendChild(tr);
             });
+        }
 
-            document.getElementById('tableSummaryText').innerText = `Mostrando ${data.length} registros agregados`;
+        function alertCustom(message) {
+            const notif = document.createElement("div");
+            notif.className = "fixed bottom-5 right-5 bg-green-600 text-white px-4 py-3 rounded-xl shadow-2xl z-50 text-sm flex items-center gap-2 animate-bounce";
+            notif.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${message}`;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3500);
         }
     </script>
 </body>
