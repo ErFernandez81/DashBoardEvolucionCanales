@@ -416,7 +416,19 @@
 
             const sortedMeses = Array.from(mesesSet).sort();
             const canales = Array.from(canalesSet);
-            const colorPalette = ["#00a950", "#007bff", "#ffc107", "#ff5722", "#9c27b0", "#00bcd4"];
+            
+            // Paleta de colores altamente distinguibles y contrastados
+            const distinctColors = {
+                "PRODEMMOVIL": "#00E676", // Verde brillante
+                "PRODEMNET": "#2979FF",   // Azul eléctrico
+                "PRODEMRED": "#FFEA00",   // Amarillo oro
+                "CAI": "#FF3D00",         // Rojo anaranjado intenso
+                "CAJAS": "#E040FB",       // Morado / Fucsia
+                "COBROS QR": "#00E5FF",   // Cyan brillante
+                "PAGOS QR": "#FF9100",    // Naranja brillante
+                "QR CARTERA": "#7C4DFF"   // Violeta oscuro / Índigo
+            };
+            const fallbackColors = ["#651FFF", "#00BFA5", "#F50057", "#1DE9B6", "#AA00FF", "#FFD600"];
             
             const datasets = canales.map((canal, idx) => {
                 const dataPoints = sortedMeses.map(mes => {
@@ -424,11 +436,13 @@
                     return match.reduce((sum, curr) => sum + curr[activeMetric], 0);
                 });
 
+                const color = distinctColors[canal] || fallbackColors[idx % fallbackColors.length];
+
                 return {
                     label: canal,
                     data: dataPoints,
-                    borderColor: colorPalette[idx % colorPalette.length],
-                    backgroundColor: colorPalette[idx % colorPalette.length],
+                    borderColor: color,
+                    backgroundColor: color,
                     borderWidth: 3,
                     tension: 0.3,
                     fill: false
@@ -519,6 +533,22 @@
             const labels = Object.keys(canalMap);
             const data = Object.values(canalMap);
 
+            const distinctColors = {
+                "PRODEMMOVIL": "#00E676",
+                "PRODEMNET": "#2979FF",
+                "PRODEMRED": "#FFEA00",
+                "CAI": "#FF3D00",
+                "CAJAS": "#E040FB",
+                "COBROS QR": "#00E5FF",
+                "PAGOS QR": "#FF9100",
+                "QR CARTERA": "#7C4DFF"
+            };
+            const fallbackColors = ["#651FFF", "#00BFA5", "#F50057", "#1DE9B6", "#AA00FF", "#FFD600"];
+            
+            const backgroundColors = labels.map((label, idx) => 
+                distinctColors[label] || fallbackColors[idx % fallbackColors.length]
+            );
+
             if (doughnutChartInstance) doughnutChartInstance.destroy();
 
             doughnutChartInstance = new Chart(ctx, {
@@ -527,7 +557,7 @@
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: ['#00a950', '#007bff', '#ffc107', '#ff5722', '#9c27b0', '#00bcd4'],
+                        backgroundColor: backgroundColors,
                         borderWidth: 0
                     }]
                 },
